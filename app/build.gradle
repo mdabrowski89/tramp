@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "androidx.navigation.safeargs"
 
 android {
 
@@ -50,9 +51,16 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation Dependencies.kotlinStdLib
-    
+
     implementation Dependencies.appcompatLib
     implementation Dependencies.constraintLayoutLib
+    implementation Dependencies.legacySupportLib
+
+    implementation Dependencies.playServiceMapsLib
+
+    // Navigation component
+    implementation Dependencies.navigationFragmentLib
+    implementation Dependencies.navigationUiLib
 
     // Unit tests
     testImplementation Dependencies.junitLib

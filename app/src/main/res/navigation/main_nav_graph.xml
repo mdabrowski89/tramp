@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/tramStopsFragment">
+
+    <fragment
+        android:id="@+id/tramStopsFragment"
+        android:name="pl.mobite.tramp.ui.components.tramstops.TramStopsFragment"
+        android:label="TramStopsFragment">
+        <action
+            android:id="@+id/action_tramStopsFragment_to_timeTableFragment"
+            app:destination="@id/timeTableFragment"
+            app:enterAnim="@anim/slide_left_to_screen"
+            app:popExitAnim="@anim/slide_right_from_screen"
+            app:exitAnim="@anim/stay"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/timeTableFragment"
+        android:name="pl.mobite.tramp.ui.components.timetable.TimeTableFragment"
+        android:label="TimeTableFragment"/>
+</navigation>

@@ -11,6 +11,8 @@ object Versions {
     const val androidxConstraintLayout = "2.0.0-alpha2"
     const val legacySupport = "1.0.0"
 
+    const val playServiceMaps = "15.0.1"
+
     const val archNavigation = "1.0.0-alpha07"
 
     const val rxKotlin = "2.3.0"
@@ -45,6 +47,8 @@ object Dependencies {
     const val vectorDrawableLib = "androidx.vectordrawable:vectordrawable:${Versions.androidx}"
     const val constraintLayoutLib = "androidx.constraintlayout:constraintlayout:${Versions.androidxConstraintLayout}"
     const val legacySupportLib = "androidx.legacy:legacy-support-v4:${Versions.legacySupport}"
+
+    const val playServiceMapsLib = "com.google.android.gms:play-services-maps:${Versions.playServiceMaps}"
 
     const val navigationFragmentLib = "android.arch.navigation:navigation-fragment:${Versions.archNavigation}"
     const val navigationUiLib = "android.arch.navigation:navigation-ui:${Versions.archNavigation}"
