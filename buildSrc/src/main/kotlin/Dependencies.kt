@@ -15,6 +15,7 @@ object Versions {
 
     const val archNavigation = "1.0.0-alpha07"
 
+    const val rxAndroid = "2.1.0"
     const val rxKotlin = "2.3.0"
     const val rxBinding = "2.1.1"
     const val rxRelay = "2.1.0"
@@ -53,6 +54,7 @@ object Dependencies {
     const val navigationFragmentLib = "android.arch.navigation:navigation-fragment:${Versions.archNavigation}"
     const val navigationUiLib = "android.arch.navigation:navigation-ui:${Versions.archNavigation}"
 
+    const val rxAndroidLib = "io.reactivex.rxjava2:rxandroid:${Versions.rxAndroid}"
     const val rxKotlinLib = "io.reactivex.rxjava2:rxkotlin:${Versions.rxKotlin}"
     const val rxBindingLib = "com.jakewharton.rxbinding2:rxbinding:${Versions.rxBinding}"
     const val rxRelayLib = "com.jakewharton.rxrelay2:rxrelay:${Versions.rxRelay}"

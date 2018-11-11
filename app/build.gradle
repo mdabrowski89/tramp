@@ -50,6 +50,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(':domain')
+
     implementation Dependencies.kotlinStdLib
 
     implementation Dependencies.appcompatLib
@@ -57,6 +59,13 @@ dependencies {
     implementation Dependencies.legacySupportLib
 
     implementation Dependencies.playServiceMapsLib
+
+    implementation Dependencies.lifecycleExtensionsLib
+    implementation Dependencies.lifecycleViewModelsLib
+
+    implementation Dependencies.rxAndroidLib
+    implementation Dependencies.rxKotlinLib
+    implementation Dependencies.rxRelayLib
 
     // Navigation component
     implementation Dependencies.navigationFragmentLib

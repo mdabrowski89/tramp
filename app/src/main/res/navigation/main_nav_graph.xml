@@ -2,16 +2,15 @@
 <navigation
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/tramStopsFragment">
+    app:startDestination="@id/tramLineFragment">
 
     <fragment
-        android:id="@+id/tramStopsFragment"
-        android:name="pl.mobite.tramp.ui.components.tramstops.TramStopsFragment"
+        android:id="@+id/tramLineFragment"
+        android:name="pl.mobite.tramp.ui.components.tramline.TramLineFragment"
         android:label="TramStopsFragment">
         <action
-            android:id="@+id/action_tramStopsFragment_to_timeTableFragment"
+            android:id="@+id/action_tramLineFragment_to_timeTableFragment"
             app:destination="@id/timeTableFragment"
             app:enterAnim="@anim/slide_left_to_screen"
             app:popExitAnim="@anim/slide_right_from_screen"
