@@ -8,4 +8,6 @@ dependencies {
 
     testImplementation Dependencies.junitLib
     testImplementation Dependencies.mockitoLib
+    testImplementation Dependencies.powerMockMockitoLib
+    testImplementation Dependencies.powerMockJunitLib
 }

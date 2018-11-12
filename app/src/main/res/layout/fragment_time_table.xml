@@ -8,6 +8,7 @@
     android:background="@color/colorPrimary">
 
     <TextView
+        android:id="@+id/timetableIdText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Time table"/>

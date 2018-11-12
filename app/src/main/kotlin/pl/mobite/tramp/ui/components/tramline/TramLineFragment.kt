@@ -2,6 +2,7 @@ package pl.mobite.tramp.ui.components.tramline
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,14 @@ import android.view.WindowInsets
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.disposables.CompositeDisposable
@@ -21,12 +26,16 @@ import pl.mobite.tramp.ViewModelFactory
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
 import pl.mobite.tramp.ui.base.BaseFragment
 import pl.mobite.tramp.ui.components.tramline.TramLineIntent.GetTramLineIntent
+import pl.mobite.tramp.ui.models.TramStopDetails
+import pl.mobite.tramp.utils.dpToPx
+import pl.mobite.tramp.utils.getBitmap
 
 
 class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
     private var mapBottomPadding: Int? = null
+    private var mapTopPadding: Int? = null
 
     private val intentsRelay = PublishRelay.create<TramLineIntent>()
     private var lastViewState: TramLineViewState? = null
@@ -49,7 +58,9 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment).getMapAsync(this)
+        if (googleMap == null) {
+            (childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment).getMapAsync(this)
+        }
     }
 
     override fun onStart() {
@@ -75,6 +86,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onApplyInsets(v: View, insets: WindowInsets): WindowInsets {
         if (!insets.isConsumed) {
+            mapTopPadding = insets.systemWindowInsetTop
             mapBottomPadding = insets.systemWindowInsetBottom
             tryUpdateGoogleMapPadding()
         }
@@ -83,46 +95,84 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         this.googleMap = map
+        map.setOnMarkerClickListener { marker ->
+            (marker.tag as? String?)?.let { tramStopId ->
+                openTimeTable(tramStopId)
+            }
+            true
+        }
         tryUpdateGoogleMapPadding()
-        intentsRelay.accept(GetTramLineIntent(defaultTramLineDesc))
+        Handler().post { intentsRelay.accept(GetTramLineIntent(defaultTramLineDesc)) }
     }
 
     private fun render(state: TramLineViewState) {
-        saveViewState(state)
         with(state) {
-
             googleMap?.let { map ->
-                if (tramLine != null) {
-
-                    if (tramLine.stops.isEmpty()) {
-                        val msg = getString(R.string.tram_line_no_stops, tramLine.name, tramLine.direction)
-                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
-                    } else {
+                tramLine?.stops?.let { newStops ->
+                    if (tramStopsHasChanged(newStops)) {
+                        // render new stops
                         map.clear()
-                        tramLine.stops.forEach { tramStop ->
-                            val latLng = LatLng(tramStop.lat, tramStop.lng)
-                            map.addMarker(MarkerOptions().position(latLng).title(tramStop.name))
+                        if (newStops.isEmpty()) {
+                            val msg = getString(R.string.tram_line_no_stops, tramLine.name, tramLine.direction)
+                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                        } else {
+                            renderTramLineStops(map, newStops)
                         }
                     }
                 }
-            }
 
-            if (getTramLineError?.shouldBeDisplayed() == true) {
-                Toast.makeText(requireContext(), "Error occurred", Toast.LENGTH_SHORT).show()
+                if (getTramLineError?.shouldBeDisplayed() == true) {
+                    Toast.makeText(requireContext(), "Error occurred", Toast.LENGTH_SHORT).show()
+                }
+
+                saveViewState(this)
             }
         }
     }
 
+    private fun tramStopsHasChanged(newStops: List<TramStopDetails>): Boolean {
+        return lastViewState?.let { state ->
+            val stopsArray = state.tramLine?.stops?.toTypedArray()
+            val newStopsArray = newStops.toTypedArray()
+            !(stopsArray != null && stopsArray contentEquals newStopsArray)
+        } ?: true
+    }
+
+    private fun renderTramLineStops(map: GoogleMap, stops: List<TramStopDetails>) {
+        val blueDotBitmap = getBitmap(R.drawable.ic_blue_dot)
+        val boundsBuilder = LatLngBounds.builder()
+        stops.forEach { tramStop ->
+            val latLng = LatLng(tramStop.lat, tramStop.lng)
+            boundsBuilder.include(latLng)
+            val marker = map.addMarker(MarkerOptions()
+                .position(latLng)
+                .title(tramStop.name)
+                .icon(BitmapDescriptorFactory.fromBitmap(blueDotBitmap))
+            )
+            marker.tag = tramStop.id
+        }
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(36).toInt()))
+    }
+
+    private fun openTimeTable(tramStopId: String) {
+        view?.let {
+            val directions = TramLineFragmentDirections.actionTramLineFragmentToTimeTableFragment(tramStopId)
+            Navigation.findNavController(it).navigate(directions)
+        }
+    }
+
     private fun saveViewState(state: TramLineViewState) {
-        if (!(state.getTramLineInProgress)) {
+        if (!state.getTramLineInProgress) {
             lastViewState = state
         }
     }
 
     private fun tryUpdateGoogleMapPadding() {
-        mapBottomPadding?.let { padding ->
-            googleMap?.apply {
-                setPadding(0, 0, 0, padding)
+        val topPadding = mapTopPadding
+        val bottomPadding = mapBottomPadding
+        googleMap?.apply {
+            if (topPadding != null && bottomPadding != null) {
+                setPadding(0, topPadding, 0, bottomPadding)
             }
         }
     }

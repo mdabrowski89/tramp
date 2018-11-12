@@ -14,28 +14,28 @@ class TramLineReducer: BiFunction<TramLineViewState, TramLineResult, TramLineVie
             is GetTramLineResult ->
                 when (result) {
                     is GetTramLineResult.InFlight ->
-                        prevState.getTramLineInProgress()
+                        prevState.withTramLineProgress()
                     is GetTramLineResult.Success ->
-                        prevState.getTramLineCompleted(result.tramLine)
+                        prevState.withTramLine(result.tramLine)
                     is GetTramLineResult.Failure ->
-                        prevState.getTramLineError(result.t)
+                        prevState.withTramLineError(result.t)
                 }
         }
     }
 }
 
-fun TramLineViewState.getTramLineInProgress() = this.copy(
+fun TramLineViewState.withTramLineProgress() = this.copy(
     getTramLineInProgress = true,
     getTramLineError = null
 )
 
-fun TramLineViewState.getTramLineCompleted(tramLine: TramLine) = this.copy(
+fun TramLineViewState.withTramLine(tramLine: TramLine) = this.copy(
     getTramLineInProgress = false,
     tramLine = tramLine.toTramLineDetails(),
     getTramLineError = null
 )
 
-fun TramLineViewState.getTramLineError(t: Throwable) = this.copy(
+fun TramLineViewState.withTramLineError(t: Throwable) = this.copy(
     getTramLineInProgress = false,
     getTramLineError = ViewStateError(t)
 )

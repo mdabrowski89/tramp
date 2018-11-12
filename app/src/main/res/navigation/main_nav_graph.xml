@@ -20,5 +20,9 @@
     <fragment
         android:id="@+id/timeTableFragment"
         android:name="pl.mobite.tramp.ui.components.timetable.TimeTableFragment"
-        android:label="TimeTableFragment"/>
+        android:label="TimeTableFragment">
+        <argument
+            android:name="tramStopId"
+            app:argType="string"/>
+    </fragment>
 </navigation>
