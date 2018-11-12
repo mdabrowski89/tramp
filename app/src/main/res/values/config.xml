@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tramp_backend_url" translatable="false">https://api.um.warszawa.pl</string>
+    <string name="tramp_backend_api_key" translatable="false">364757d3-285f-4491-ab83-c1fda55924dc</string>
+    <string name="tramp_backend_timetable_id" translatable="false">e923fa0e-d96c-43f9-ae6e-60518c9f3238</string>
+</resources>

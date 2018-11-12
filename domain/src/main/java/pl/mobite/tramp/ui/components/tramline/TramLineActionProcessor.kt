@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import pl.mobite.tramp.data.repositories.TramLineRepository
+import pl.mobite.tramp.ui.components.tramline.TramLineAction.GetTramLineAction
 import pl.mobite.tramp.ui.components.tramline.TramLineResult.GetTramLineResult
 import pl.mobite.tramp.utils.SchedulerProvider
 
@@ -16,14 +17,14 @@ class TramLineActionProcessor(
     override fun apply(actions: Observable<TramLineAction>): ObservableSource<TramLineResult> {
         return actions.publish {shared ->
             Observable.merge(listOf(
-                shared.ofType(TramLineAction.GetTramLineAction::class.java).compose(getTramStopsProcessor)
+                shared.ofType(GetTramLineAction::class.java).compose(getTramLineProcessor)
             ))
         }
     }
 
-    private val getTramStopsProcessor = ObservableTransformer { actions: Observable<TramLineAction.GetTramLineAction> ->
+    private val getTramLineProcessor = ObservableTransformer { actions: Observable<GetTramLineAction> ->
         actions.switchMap { action ->
-            tramLineRepository.getTramStops(action.tramLineDesc)
+            tramLineRepository.getTramLine(action.tramLineDesc)
                 .toObservable()
                 .map { tramLine -> GetTramLineResult.Success(tramLine) }
                 .cast(TramLineResult::class.java)

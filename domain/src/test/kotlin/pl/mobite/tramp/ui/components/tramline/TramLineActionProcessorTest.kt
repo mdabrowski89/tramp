@@ -29,7 +29,7 @@ class TramLineActionProcessorTest {
 
     @Test
     fun testGetTramLineActionSuccess() {
-        Mockito.`when`(tramLineRepositoryMock.getTramStops(tramLineDescMock)).thenReturn(Single.just(tramLineMock))
+        Mockito.`when`(tramLineRepositoryMock.getTramLine(tramLineDescMock)).thenReturn(Single.just(tramLineMock))
 
         val actions = listOf(
             GetTramLineAction(tramLineDescMock)
@@ -44,7 +44,7 @@ class TramLineActionProcessorTest {
 
     @Test
     fun testGetTramLineActionFailure() {
-        Mockito.`when`(tramLineRepositoryMock.getTramStops(tramLineDescMock)).thenReturn(Single.error(dummyException))
+        Mockito.`when`(tramLineRepositoryMock.getTramLine(tramLineDescMock)).thenReturn(Single.error(dummyException))
 
         val actions = listOf(
             GetTramLineAction(tramLineDescMock)

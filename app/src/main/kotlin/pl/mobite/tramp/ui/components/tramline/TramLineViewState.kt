@@ -8,7 +8,7 @@ import pl.mobite.tramp.ui.models.ViewStateError
 
 data class TramLineViewState(
     val getTramLineInProgress: Boolean,
-    val tramLine: TramLineDetails?,
+    val tramLineDetails: TramLineDetails?,
     val getTramLineError: ViewStateError?
 ): Parcelable {
 
@@ -22,7 +22,7 @@ data class TramLineViewState(
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeInt((if (getTramLineInProgress) 1 else 0))
-        writeParcelable(tramLine, 0)
+        writeParcelable(tramLineDetails, 0)
         writeParcelable(getTramLineError, 0)
     }
 

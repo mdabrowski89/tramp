@@ -24,5 +24,14 @@
         <argument
             android:name="tramStopId"
             app:argType="string"/>
+        <argument
+            android:name="tramStopName"
+            app:argType="string"/>
+        <argument
+            android:name="lineName"
+            app:argType="string"/>
+        <argument
+            android:name="lineDirection"
+            app:argType="string"/>
     </fragment>
 </navigation>

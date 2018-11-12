@@ -31,7 +31,7 @@ fun TramLineViewState.withTramLineProgress() = this.copy(
 
 fun TramLineViewState.withTramLine(tramLine: TramLine) = this.copy(
     getTramLineInProgress = false,
-    tramLine = tramLine.toTramLineDetails(),
+    tramLineDetails = tramLine.toTramLineDetails(),
     getTramLineError = null
 )
 

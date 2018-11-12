@@ -16,7 +16,7 @@ class TramLineViewModel(
 
     private lateinit var disposable: Disposable
 
-    protected val intentSource = PublishRelay.create<TramLineIntent>()
+    private val intentSource = PublishRelay.create<TramLineIntent>()
 
     val states: Observable<TramLineViewState> by lazy {
         intentSource

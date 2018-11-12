@@ -23,9 +23,11 @@ import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.disposables.CompositeDisposable
 import pl.mobite.tramp.R
 import pl.mobite.tramp.ViewModelFactory
+import pl.mobite.tramp.data.repositories.models.TimeTableDesc
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
 import pl.mobite.tramp.ui.base.BaseFragment
 import pl.mobite.tramp.ui.components.tramline.TramLineIntent.GetTramLineIntent
+import pl.mobite.tramp.ui.models.TramLineDetails
 import pl.mobite.tramp.ui.models.TramStopDetails
 import pl.mobite.tramp.utils.dpToPx
 import pl.mobite.tramp.utils.getBitmap
@@ -96,8 +98,8 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         this.googleMap = map
         map.setOnMarkerClickListener { marker ->
-            (marker.tag as? String?)?.let { tramStopId ->
-                openTimeTable(tramStopId)
+            (marker.tag as? TimeTableDesc?)?.let { timeTableDesc ->
+                openTimeTable(timeTableDesc)
             }
             true
         }
@@ -108,15 +110,15 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     private fun render(state: TramLineViewState) {
         with(state) {
             googleMap?.let { map ->
-                tramLine?.stops?.let { newStops ->
-                    if (tramStopsHasChanged(newStops)) {
+                tramLineDetails?.let { tramLine ->
+                    if (tramStopsHasChanged(tramLine.stops)) {
                         // render new stops
                         map.clear()
-                        if (newStops.isEmpty()) {
-                            val msg = getString(R.string.tram_line_no_stops, tramLine.name, tramLine.direction)
+                        if (tramLine.stops.isEmpty()) {
+                            val msg = getString(R.string.tram_line_no_stops, tramLineDetails.name, tramLineDetails.direction)
                             Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                         } else {
-                            renderTramLineStops(map, newStops)
+                            renderTramLineStops(map, tramLine)
                         }
                     }
                 }
@@ -132,16 +134,16 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     private fun tramStopsHasChanged(newStops: List<TramStopDetails>): Boolean {
         return lastViewState?.let { state ->
-            val stopsArray = state.tramLine?.stops?.toTypedArray()
+            val stopsArray = state.tramLineDetails?.stops?.toTypedArray()
             val newStopsArray = newStops.toTypedArray()
             !(stopsArray != null && stopsArray contentEquals newStopsArray)
         } ?: true
     }
 
-    private fun renderTramLineStops(map: GoogleMap, stops: List<TramStopDetails>) {
+    private fun renderTramLineStops(map: GoogleMap, tramLine: TramLineDetails) {
         val blueDotBitmap = getBitmap(R.drawable.ic_blue_dot)
         val boundsBuilder = LatLngBounds.builder()
-        stops.forEach { tramStop ->
+        tramLine.stops.forEach { tramStop ->
             val latLng = LatLng(tramStop.lat, tramStop.lng)
             boundsBuilder.include(latLng)
             val marker = map.addMarker(MarkerOptions()
@@ -149,14 +151,15 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
                 .title(tramStop.name)
                 .icon(BitmapDescriptorFactory.fromBitmap(blueDotBitmap))
             )
-            marker.tag = tramStop.id
+            marker.tag = TimeTableDesc(tramLine.name, tramLine.direction, tramStop.name, tramStop.id)
         }
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(36).toInt()))
     }
 
-    private fun openTimeTable(tramStopId: String) {
+    private fun openTimeTable(timeTableDesc: TimeTableDesc) {
         view?.let {
-            val directions = TramLineFragmentDirections.actionTramLineFragmentToTimeTableFragment(tramStopId)
+            val directions = TramLineFragmentDirections.actionTramLineFragmentToTimeTableFragment(
+                timeTableDesc.stopId, timeTableDesc.stopName, timeTableDesc.lineName, timeTableDesc.lineDirection)
             Navigation.findNavController(it).navigate(directions)
         }
     }

@@ -18,6 +18,8 @@ android {
         targetSdkVersion Versions.targetSdk
         versionCode 1
         versionName "1.0"
+
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -72,6 +74,13 @@ dependencies {
 
     implementation Dependencies.roomLib
     kapt Dependencies.roomCompiler
+
+    implementation Dependencies.retrofitLib
+    implementation Dependencies.retrofitGsonConverterLib
+    implementation Dependencies.retrofitRxJava2AdapterLib
+    implementation Dependencies.retrofitLoggingInterceptorLib
+
+    implementation Dependencies.flexBoxLib
 
     // Navigation component
     implementation Dependencies.navigationFragmentLib

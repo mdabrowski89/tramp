@@ -29,6 +29,8 @@ object Versions {
 
     const val coroutines = "1.0.1"
 
+    const val flexBox = "1.1.0"
+
     // test
     const val junit = "4.12"
     const val test = "1.1.0"
@@ -73,6 +75,8 @@ object Dependencies {
 
     const val coroutinesCoreLib = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val coroutinesAndroidLib = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+
+    const val flexBoxLib = "com.google.android:flexbox:${Versions.flexBox}"
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"

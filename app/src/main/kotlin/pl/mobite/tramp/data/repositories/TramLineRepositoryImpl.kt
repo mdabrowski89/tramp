@@ -11,7 +11,7 @@ class TramLineRepositoryImpl(
     private val tramLineLocalRepository: TramLineLocalRepository
 ): TramLineRepository {
 
-    override fun getTramStops(tramLineDesc: TramLineDesc): Single<TramLine> {
+    override fun getTramLine(tramLineDesc: TramLineDesc): Single<TramLine> {
         return tramLineLocalRepository
             .getTramLineFromDb(tramLineDesc)
             .switchIfEmpty(

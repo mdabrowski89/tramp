@@ -7,5 +7,5 @@ import pl.mobite.tramp.data.repositories.models.TramLineDesc
 
 interface TramLineRepository {
 
-    fun getTramStops(tramLineDesc: TramLineDesc): Single<TramLine>
+    fun getTramLine(tramLineDesc: TramLineDesc): Single<TramLine>
 }

@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">@color/darkViolet</color>
+    <color name="colorPrimaryDark">@color/darkViolet4</color>
+    <color name="colorAccent">@color/lightViolet</color>
 
-    <color name="White">#FFFFFF</color>
-    <color name="DodgerBlue">#1E90FF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#1E90FF</color>
+
+    <color name="darkViolet">#525070</color>
+    <color name="darkViolet2">#4e466a</color>
+    <color name="darkViolet3">#564e73</color>
+    <color name="darkViolet4">#373351</color>
+
+    <color name="lightViolet">#e7e5ed</color>
+    <color name="lightViolet2">#e5e5eb</color>
+    <color name="lightViolet3">#f4f5f7</color>
+    <color name="lightViolet4">#c2bdd1</color>
 
 </resources>
