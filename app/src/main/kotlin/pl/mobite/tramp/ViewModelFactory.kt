@@ -2,6 +2,7 @@ package pl.mobite.tramp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import pl.mobite.tramp.data.local.json.JsonDataProvider
 import pl.mobite.tramp.data.local.repositories.TramLineLocalRepositoryImpl
 import pl.mobite.tramp.data.repositories.TramLineRepositoryImpl
 import pl.mobite.tramp.ui.components.tramline.TramLineViewModel
@@ -14,7 +15,9 @@ class ViewModelFactory private constructor(private val args: Array<out Any?>): V
     override fun <T: ViewModel?> create(modelClass: Class<T>): T {
 
         // TODO: replace creation with DI
-        val tramLineLocalRepository = TramLineLocalRepositoryImpl()
+        val jsonDataProvider = JsonDataProvider()
+        val database = TrampApp.instance.database
+        val tramLineLocalRepository = TramLineLocalRepositoryImpl(jsonDataProvider, database)
         val tramLineRepo = TramLineRepositoryImpl(tramLineLocalRepository)
         val sp = AndroidSchedulerProvider.instance
 

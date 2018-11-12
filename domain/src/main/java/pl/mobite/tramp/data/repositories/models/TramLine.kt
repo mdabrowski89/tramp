@@ -12,7 +12,7 @@ data class TramLine(
 )
 
 data class TramStop(
-    val id: Long,
+    val id: String,
     val name: String,
     val lat: Double,
     val lng: Double

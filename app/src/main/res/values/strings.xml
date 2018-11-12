@@ -1,2 +1,3 @@
 <resources>
+    <string name="tram_line_no_stops">No stops for line: %s in direction: %s</string>
 </resources>

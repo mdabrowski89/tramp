@@ -26,6 +26,7 @@ import pl.mobite.tramp.ui.components.tramline.TramLineIntent.GetTramLineIntent
 class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
+    private var mapBottomPadding: Int? = null
 
     private val intentsRelay = PublishRelay.create<TramLineIntent>()
     private var lastViewState: TramLineViewState? = null
@@ -73,11 +74,16 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onApplyInsets(v: View, insets: WindowInsets): WindowInsets {
+        if (!insets.isConsumed) {
+            mapBottomPadding = insets.systemWindowInsetBottom
+            tryUpdateGoogleMapPadding()
+        }
         return insets
     }
 
     override fun onMapReady(map: GoogleMap) {
         this.googleMap = map
+        tryUpdateGoogleMapPadding()
         intentsRelay.accept(GetTramLineIntent(defaultTramLineDesc))
     }
 
@@ -87,10 +93,16 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
             googleMap?.let { map ->
                 if (tramLine != null) {
-                    map.clear()
-                    tramLine.stops.forEach { tramStop ->
-                        val latLng = LatLng(tramStop.lat, tramStop.lng)
-                        map.addMarker(MarkerOptions().position(latLng).title(tramStop.name))
+
+                    if (tramLine.stops.isEmpty()) {
+                        val msg = getString(R.string.tram_line_no_stops, tramLine.name, tramLine.direction)
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                    } else {
+                        map.clear()
+                        tramLine.stops.forEach { tramStop ->
+                            val latLng = LatLng(tramStop.lat, tramStop.lng)
+                            map.addMarker(MarkerOptions().position(latLng).title(tramStop.name))
+                        }
                     }
                 }
             }
@@ -104,6 +116,14 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     private fun saveViewState(state: TramLineViewState) {
         if (!(state.getTramLineInProgress)) {
             lastViewState = state
+        }
+    }
+
+    private fun tryUpdateGoogleMapPadding() {
+        mapBottomPadding?.let { padding ->
+            googleMap?.apply {
+                setPadding(0, 0, 0, padding)
+            }
         }
     }
 

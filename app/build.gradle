@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs"
+apply plugin: 'kotlin-kapt'
 
 android {
 
@@ -66,6 +67,11 @@ dependencies {
     implementation Dependencies.rxAndroidLib
     implementation Dependencies.rxKotlinLib
     implementation Dependencies.rxRelayLib
+
+    implementation Dependencies.gsonLib
+
+    implementation Dependencies.roomLib
+    kapt Dependencies.roomCompiler
 
     // Navigation component
     implementation Dependencies.navigationFragmentLib

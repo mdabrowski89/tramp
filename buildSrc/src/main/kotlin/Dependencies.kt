@@ -23,6 +23,8 @@ object Versions {
     const val retrofit = "2.4.0"
     const val retrofitLoggingInterceptor = "3.9.1"
 
+    const val gson = "2.8.5"
+
     const val room = "2.1.0-alpha02"
 
     const val coroutines = "1.0.1"
@@ -63,6 +65,8 @@ object Dependencies {
     const val retrofitGsonConverterLib = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val retrofitRxJava2AdapterLib = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
     const val retrofitLoggingInterceptorLib = "com.squareup.okhttp3:logging-interceptor:${Versions.retrofitLoggingInterceptor}"
+
+    const val gsonLib = "com.google.code.gson:gson:${Versions.gson}"
 
     const val roomLib = "androidx.room:room-runtime:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"

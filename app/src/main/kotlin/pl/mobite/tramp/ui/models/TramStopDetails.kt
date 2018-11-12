@@ -6,14 +6,14 @@ import pl.mobite.tramp.data.repositories.models.TramStop
 
 
 data class TramStopDetails(
-    val id: Long,
+    val id: String,
     val name: String,
     val lat: Double,
     val lng: Double
 ): Parcelable {
 
     constructor(source: Parcel): this(
-        source.readLong(),
+        source.readString()!!,
         source.readString()!!,
         source.readDouble(),
         source.readDouble()
@@ -22,7 +22,7 @@ data class TramStopDetails(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeLong(id)
+        writeString(id)
         writeString(name)
         writeDouble(lat)
         writeDouble(lng)
