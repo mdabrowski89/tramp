@@ -21,7 +21,6 @@ class ViewModelFactory private constructor(private val args: Array<out Any?>): V
     @Suppress("UNCHECKED_CAST")
     override fun <T: ViewModel?> create(modelClass: Class<T>): T {
 
-        // TODO: replace creation with DI
         val sp = AndroidSchedulerProvider.instance
         val db = TrampApp.instance.database
 
@@ -35,7 +34,7 @@ class ViewModelFactory private constructor(private val args: Array<out Any?>): V
         val timeTableRepo by lazy { TimeTableRepositoryImpl(timeTableLocalRepository, timeTableRemoteRepository) }
 
         return when (modelClass) {
-            TramLineViewModel::class.java -> TramLineViewModel(tramLineRepo, sp, args[0] as TramLineViewState?) as T
+            TramLineViewModel::class.java -> TramLineViewModel(tramLineRepo, timeTableRepo, sp, args[0] as TramLineViewState?) as T
             TimeTableViewModel::class.java -> TimeTableViewModel(timeTableRepo, sp, args[0] as TimeTableViewState?) as T
             else -> throw IllegalStateException("Unknown view model class")
         }

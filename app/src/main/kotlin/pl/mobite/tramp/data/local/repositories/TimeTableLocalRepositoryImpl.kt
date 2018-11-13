@@ -14,27 +14,27 @@ class TimeTableLocalRepositoryImpl(
     private val database: TrampAppDatabase
 ): TimeTableLocalRepository {
 
-    override fun getTimeTable(timeTableDesc: TimeTableDesc): Maybe<TimeTable> {
+    override fun getTimeTable(tramStopId: String): Maybe<TimeTable> {
         return Maybe.fromCallable {
-            val tramStop = database.tramDao().getTramStop(timeTableDesc.stopId).firstOrNull()
+            val tramStop = database.tramDao().getTramStop(tramStopId).firstOrNull()
             if (tramStop != null) {
-                val tramStopId = tramStop.id
                 val updateTimestamp = database.timeTableStatusDao().getTimeTableStatus(tramStopId).firstOrNull()?.updateTimestamp
                 val timeEntries = database.timeEntryDao().getTimeEntries(tramStopId).map { it.toTimeEntry() }
-                if (updateTimestamp != null) {
-                    val dataCanBeOutdated = System.currentTimeMillis() - updateTimestamp > dataValidityInMills
-                    return@fromCallable TimeTable(timeEntries, dataCanBeOutdated)
+                val dataCanBeOutdated = if (updateTimestamp != null) {
+                     System.currentTimeMillis() - updateTimestamp > dataValidityInMills
+                } else {
+                    true
                 }
+                return@fromCallable TimeTable(timeEntries, dataCanBeOutdated)
             }
             null
         }
     }
 
-    override fun storeTimeTable(timeTableDesc: TimeTableDesc, timeTable: TimeTable): Single<TimeTable> {
+    override fun storeTimeTable(tramStopId: String, timeTable: TimeTable): Single<TimeTable> {
         return Single.fromCallable {
-            val tramStop = database.tramDao().getTramStop(timeTableDesc.stopId).firstOrNull()
+            val tramStop = database.tramDao().getTramStop(tramStopId).firstOrNull()
             if (tramStop != null) {
-                val tramStopId = tramStop.id
                 val timeEntryDao = database.timeEntryDao()
 
                 timeEntryDao.delete(tramStopId)

@@ -23,7 +23,7 @@ class TramLineLocalRepositoryImpl(
             val tramLineEntity = tramDao.getTramLine(tramLineDesc.name, tramLineDesc.direction).firstOrNull()
             if (tramLineEntity != null) {
                 val tramStops = tramDao.getTramStops(tramLineEntity.id).map { it.toTramStop() }
-                TramLine(tramLineDesc, tramStops)
+                TramLine(tramStops)
             } else {
                 null
             }
@@ -32,29 +32,31 @@ class TramLineLocalRepositoryImpl(
 
     override fun getTramLineFromJson(tramLineDesc: TramLineDesc): Maybe<TramLine> {
         return Maybe.fromCallable {
-            val tramStops = jsonDataProvider.getStopsJson(tramLineDesc)?.stops?.mapNotNull {stop ->
+            val tramStopsOrdered = jsonDataProvider.getStopsJson(tramLineDesc)?.stops?.mapNotNull {stop ->
                 if (stop != null && stop.line == tramLineDesc.name && stop.direction == tramLineDesc.direction
-                    && stop.lat != null && stop.lon != null && stop.name != null && stop.stopId != null) {
-                    TramStop(stop.stopId, stop.name, stop.lat, stop.lon)
+                    && stop.lat != null && stop.lon != null && stop.name != null && stop.stopId != null && stop.order != null) {
+                    TramStopOrdered(TramStop(stop.stopId, stop.name, stop.lat, stop.lon), stop.order)
                 } else {
                     null
                 }
             }
-            if (tramStops != null && !tramStops.isEmpty()) {
-                TramLine(tramLineDesc, tramStops)
+            if (tramStopsOrdered != null && !tramStopsOrdered.isEmpty()) {
+                TramLine(tramStopsOrdered.sortedBy { it.order }.map { it.tramStop })
             } else {
                 null
             }
         }
     }
 
-    override fun storeTramLineInDb(tramLine: TramLine): Completable {
+    override fun storeTramLineInDb(tramLineDesc: TramLineDesc, tramLine: TramLine): Completable {
         return Completable.fromCallable {
             val tramDao = database.tramDao()
-            val tramLineId = tramDao.insert(tramLine.toTramLineEntity())
+            val tramLineId = tramDao.insert(tramLineDesc.toTramLineEntity())
             val tramStopEntities = tramLine.stops.map { it.toTramStopEntity(tramLineId) }
             tramDao.insert(tramStopEntities)
             Unit
         }
     }
+
+    private data class TramStopOrdered(val tramStop: TramStop, val order: Int)
 }

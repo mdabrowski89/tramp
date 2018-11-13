@@ -13,5 +13,6 @@ data class StopJson(
     @SerializedName("line") val line: String?,
     @SerializedName("lon") val lon: Double?,
     @SerializedName("name") val name: String?,
-    @SerializedName("stopId") val stopId: String?
+    @SerializedName("stopId") val stopId: String?,
+    @SerializedName("order") val order: Int?
 )

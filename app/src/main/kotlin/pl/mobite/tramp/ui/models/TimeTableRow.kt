@@ -34,7 +34,8 @@ data class TimeTableRow(
 fun TimeTable.toTimeTableRows(): List<TimeTableRow> {
     val rows = mutableListOf<TimeTableRow>()
     this.times.groupBy { it.hour }.forEach { (hour, timeEntries) ->
-        rows.add(TimeTableRow(hour, timeEntries.map { it.minute }))
+        rows.add(TimeTableRow(hour, timeEntries.map { it.minute }.sorted()))
     }
+    rows.sortBy { it.hour }
     return rows
 }

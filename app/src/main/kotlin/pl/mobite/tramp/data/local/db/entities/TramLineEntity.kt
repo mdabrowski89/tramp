@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import pl.mobite.tramp.data.repositories.models.TramLine
+import pl.mobite.tramp.data.repositories.models.TramLineDesc
 
 @Entity(
     tableName = "tram_line",
@@ -21,4 +21,4 @@ data class TramLineEntity(
     @PrimaryKey(autoGenerate = true) var id: Long = 0
 }
 
-fun TramLine.toTramLineEntity() = TramLineEntity(desc.name, desc.direction)
+fun TramLineDesc.toTramLineEntity() = TramLineEntity(name, direction)

@@ -6,6 +6,7 @@ import pl.mobite.tramp.data.local.repositories.TimeTableLocalRepository
 import pl.mobite.tramp.data.remote.repositories.TimeTableRemoteRepository
 import pl.mobite.tramp.data.repositories.models.TimeTable
 import pl.mobite.tramp.data.repositories.models.TimeTableDesc
+import pl.mobite.tramp.data.repositories.models.TramStop
 
 
 class TimeTableRepositoryImpl(
@@ -13,14 +14,14 @@ class TimeTableRepositoryImpl(
     private val timeTableRemoteRepository: TimeTableRemoteRepository
 ): TimeTableRepository {
 
-    override fun getTimeTableFromLocal(timeTableDesc: TimeTableDesc): Maybe<TimeTable> {
+    override fun getTimeTableFromLocal(tramStopId: String): Maybe<TimeTable> {
         return timeTableLocalRepository
-            .getTimeTable(timeTableDesc)
+            .getTimeTable(tramStopId)
     }
 
-    override fun getTimeTableFromRemote(timeTableDesc: TimeTableDesc): Single<TimeTable> {
+    override fun getTimeTableFromRemote(tramStopId: String, lineName: String): Single<TimeTable> {
         return timeTableRemoteRepository
-            .getTimeTable(timeTableDesc)
-            .flatMap { timeTable -> timeTableLocalRepository.storeTimeTable(timeTableDesc, timeTable) }
+            .getTimeTable(tramStopId, lineName)
+            .flatMap { timeTable -> timeTableLocalRepository.storeTimeTable(tramStopId, timeTable) }
     }
 }

@@ -18,10 +18,10 @@ class TramLineRepositoryImpl(
                 tramLineLocalRepository
                     .getTramLineFromJson(tramLineDesc)
                     .flatMap { tramLine -> tramLineLocalRepository
-                        .storeTramLineInDb(tramLine)
+                        .storeTramLineInDb(tramLineDesc, tramLine)
                         .andThen(Maybe.just(tramLine))
                     }
             )
-            .switchIfEmpty(Single.just(TramLine(tramLineDesc, emptyList())))
+            .switchIfEmpty(Single.just(TramLine(emptyList())))
     }
 }

@@ -24,12 +24,13 @@ class TimeTableActionProcessor(
 
     private val getTramStopsProcessor = ObservableTransformer { actions: Observable<GetTimeTableAction> ->
         actions.switchMap { action ->
-            timeTableRepository.getTimeTableFromLocal(action.timeTableDesc)
-                .switchIfEmpty(timeTableRepository.getTimeTableFromRemote(action.timeTableDesc))
+            val (lineName, _, _, stopId) = action.timeTableDesc
+            timeTableRepository.getTimeTableFromLocal(stopId)
+                .switchIfEmpty(timeTableRepository.getTimeTableFromRemote(stopId, lineName))
                 .flatMapObservable { timeTable ->
                     if (timeTable.canBeOutdated) {
                         timeTableRepository
-                            .getTimeTableFromRemote(action.timeTableDesc)
+                            .getTimeTableFromRemote(stopId, lineName)
                             .toObservable()
                             .startWith(timeTable)
                     } else {

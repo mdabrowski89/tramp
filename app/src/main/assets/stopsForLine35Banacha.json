@@ -6,7 +6,8 @@
             "line": "35",
             "lon": 21.011332,
             "name": "Centrum 07",
-            "stopId": "701307"
+            "stopId": "701307",
+            "order": 22
         },
         {
             "direction": "Banacha",
@@ -14,7 +15,8 @@
             "line": "35",
             "lon": 21.008242,
             "name": "Metro Świętokrzyska 05",
-            "stopId": "701405"
+            "stopId": "701405",
+            "order": 21
         },
         {
             "direction": "Banacha",
@@ -22,7 +24,8 @@
             "line": "35",
             "lon": 21.006364,
             "name": "Królewska 05",
-            "stopId": "701505"
+            "stopId": "701505",
+            "order": 20
         },
         {
             "direction": "Banacha",
@@ -30,7 +33,8 @@
             "line": "35",
             "lon": 21.002454,
             "name": "Pl. Bankowy 07",
-            "stopId": "701607"
+            "stopId": "701607",
+            "order": 19
         },
         {
             "direction": "Banacha",
@@ -38,7 +42,8 @@
             "line": "35",
             "lon": 21.000922,
             "name": "Metro Ratusz Arsenał 03",
-            "stopId": "709903"
+            "stopId": "709903",
+            "order": 18
         },
         {
             "direction": "Banacha",
@@ -46,7 +51,8 @@
             "line": "35",
             "lon": 20.998733,
             "name": "Muranów 05",
-            "stopId": "701705"
+            "stopId": "701705",
+            "order": 17
         },
         {
             "direction": "Banacha",
@@ -54,7 +60,8 @@
             "line": "35",
             "lon": 20.997271,
             "name": "Muranowska 11",
-            "stopId": "701811"
+            "stopId": "701811",
+            "order": 16
         },
         {
             "direction": "Banacha",
@@ -62,7 +69,8 @@
             "line": "35",
             "lon": 20.990277,
             "name": "Dzika 03",
-            "stopId": "702003"
+            "stopId": "702003",
+            "order": 15
         },
         {
             "direction": "Banacha",
@@ -70,7 +78,8 @@
             "line": "35",
             "lon": 20.985354,
             "name": "Stawki 05",
-            "stopId": "708405"
+            "stopId": "708405",
+            "order": 14
         },
         {
             "direction": "Banacha",
@@ -78,7 +87,8 @@
             "line": "35",
             "lon": 20.983159,
             "name": "Rondo 'Radosława' 05",
-            "stopId": "709105"
+            "stopId": "709105",
+            "order": 13
         },
         {
             "direction": "Banacha",
@@ -86,7 +96,8 @@
             "line": "35",
             "lon": 20.982144,
             "name": "Rondo 'Radosława' 09",
-            "stopId": "709109"
+            "stopId": "709109",
+            "order": 12
         },
         {
             "direction": "Banacha",
@@ -94,7 +105,8 @@
             "line": "35",
             "lon": 20.978472,
             "name": "Pl. Grunwaldzki 07",
-            "stopId": "603907"
+            "stopId": "603907",
+            "order": 11
         },
         {
             "direction": "Banacha",
@@ -102,7 +114,8 @@
             "line": "35",
             "lon": 20.971461,
             "name": "Sady Żoliborskie 03",
-            "stopId": "604003"
+            "stopId": "604003",
+            "order": 10
         },
         {
             "direction": "Banacha",
@@ -110,7 +123,8 @@
             "line": "35",
             "lon": 20.962833,
             "name": "Włościańska 03",
-            "stopId": "604103"
+            "stopId": "604103",
+            "order": 9
         },
         {
             "direction": "Banacha",
@@ -118,7 +132,8 @@
             "line": "35",
             "lon": 20.958243,
             "name": "Park Olszyna 03",
-            "stopId": "604203"
+            "stopId": "604203",
+            "order": 8
         },
         {
             "direction": "Banacha",
@@ -126,7 +141,8 @@
             "line": "35",
             "lon": 20.953235,
             "name": "Romaszewskiego 03",
-            "stopId": "604303"
+            "stopId": "604303",
+            "order": 7
         },
         {
             "direction": "Banacha",
@@ -134,7 +150,8 @@
             "line": "35",
             "lon": 20.94564,
             "name": "Piaski 03",
-            "stopId": "604503"
+            "stopId": "604503",
+            "order": 6
         },
         {
             "direction": "Banacha",
@@ -142,7 +159,8 @@
             "line": "35",
             "lon": 20.937923,
             "name": "Al. Reymonta 08",
-            "stopId": "604608"
+            "stopId": "604608",
+            "order": 5
         },
         {
             "direction": "Banacha",
@@ -150,7 +168,8 @@
             "line": "35",
             "lon": 20.93375,
             "name": "Conrada 06",
-            "stopId": "604706"
+            "stopId": "604706",
+            "order": 4
         },
         {
             "direction": "Banacha",
@@ -158,7 +177,8 @@
             "line": "35",
             "lon": 20.932856,
             "name": "Ogrody Działkowe Bemowo 05",
-            "stopId": "506505"
+            "stopId": "506505",
+            "order": 3
         },
         {
             "direction": "Banacha",
@@ -166,7 +186,8 @@
             "line": "35",
             "lon": 20.927067,
             "name": "Piastów Śląskich 05",
-            "stopId": "506205"
+            "stopId": "506205",
+            "order": 2
         },
         {
             "direction": "Banacha",
@@ -174,7 +195,8 @@
             "line": "35",
             "lon": 20.924862,
             "name": "Nowe Bemowo 09",
-            "stopId": "516109"
+            "stopId": "516109",
+            "order": 1
         }
     ]
 }

@@ -2,19 +2,17 @@ package pl.mobite.tramp.ui.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import pl.mobite.tramp.data.repositories.models.TramLine
+import pl.mobite.tramp.data.repositories.models.TramLineDesc
 
 
 data class TramLineDetails(
     val name: String,
-    val direction: String,
-    val stops: List<TramStopDetails>
+    val direction: String
 ): Parcelable {
 
     constructor(source: Parcel): this(
         source.readString()!!,
-        source.readString()!!,
-        source.createTypedArrayList(TramStopDetails.CREATOR)!!
+        source.readString()!!
     )
 
     override fun describeContents() = 0
@@ -22,7 +20,6 @@ data class TramLineDetails(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(name)
         writeString(direction)
-        writeTypedList(stops)
     }
 
     companion object {
@@ -34,8 +31,6 @@ data class TramLineDetails(
     }
 }
 
-fun TramLine.toTramLineDetails() = TramLineDetails(
-    this.desc.name,
-    this.desc.direction,
-    this.stops.map { it.toTramStopDetails() }
-)
+
+
+fun TramLineDesc.toTramLineDetails() = TramLineDetails(name, direction)

@@ -7,7 +7,6 @@ data class TramLineDesc(
 )
 
 data class TramLine(
-    val desc: TramLineDesc,
     val stops: List<TramStop>
 )
 

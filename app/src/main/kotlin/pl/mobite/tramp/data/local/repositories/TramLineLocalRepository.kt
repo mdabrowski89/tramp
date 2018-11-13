@@ -12,5 +12,5 @@ interface TramLineLocalRepository {
 
     fun getTramLineFromJson(tramLineDesc: TramLineDesc): Maybe<TramLine>
 
-    fun storeTramLineInDb(tramLine: TramLine): Completable
+    fun storeTramLineInDb(tramLineDesc: TramLineDesc, tramLine: TramLine): Completable
 }

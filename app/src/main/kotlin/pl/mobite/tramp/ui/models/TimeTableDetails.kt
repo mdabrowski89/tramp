@@ -37,9 +37,4 @@ data class TimeTableDetails(
     }
 }
 
-fun TimeTableDesc.toTimeTableDetails() = TimeTableDetails(
-    this.lineName,
-    this.lineDirection,
-    this.stopName,
-    this.stopId
-)
+fun TimeTableDesc.toTimeTableDetails() = TimeTableDetails(lineName, lineDirection, stopName, stopId)

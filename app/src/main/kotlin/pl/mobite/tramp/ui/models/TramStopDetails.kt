@@ -37,9 +37,6 @@ data class TramStopDetails(
     }
 }
 
-fun TramStop.toTramStopDetails() = TramStopDetails(
-    this.id,
-    this.name,
-    this.lat,
-    this.lng
-)
+fun TramStop.toTramStopDetails() = TramStopDetails(id, name, lat, lng)
+
+fun TramStopDetails.toTramStop() = TramStop(id, name, lat, lng)
