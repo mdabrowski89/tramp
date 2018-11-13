@@ -27,7 +27,7 @@ data class TimeEntryEntity(
 }
 
 
-fun TimeEntry.toTimeEntryEntidy(tramStopId: String) = TimeEntryEntity(
+fun TimeEntry.toTimeEntryEntity(tramStopId: String) = TimeEntryEntity(
     tramStopId,
     hour,
     minute

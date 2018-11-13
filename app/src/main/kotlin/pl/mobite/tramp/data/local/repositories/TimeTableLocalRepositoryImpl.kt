@@ -5,7 +5,7 @@ import io.reactivex.Single
 import pl.mobite.tramp.data.local.db.TrampAppDatabase
 import pl.mobite.tramp.data.local.db.entities.TimeTableStatusEntity
 import pl.mobite.tramp.data.local.db.entities.toTimeEntry
-import pl.mobite.tramp.data.local.db.entities.toTimeEntryEntidy
+import pl.mobite.tramp.data.local.db.entities.toTimeEntryEntity
 import pl.mobite.tramp.data.repositories.models.TimeTable
 import pl.mobite.tramp.data.repositories.models.TimeTableDesc
 
@@ -38,7 +38,7 @@ class TimeTableLocalRepositoryImpl(
                 val timeEntryDao = database.timeEntryDao()
 
                 timeEntryDao.delete(tramStopId)
-                timeEntryDao.insert(timeTable.times.map { it.toTimeEntryEntidy(tramStopId) })
+                timeEntryDao.insert(timeTable.times.map { it.toTimeEntryEntity(tramStopId) })
 
                 database.timeTableStatusDao().insert(TimeTableStatusEntity(tramStopId, System.currentTimeMillis()))
             }

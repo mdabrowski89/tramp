@@ -98,15 +98,16 @@ class TimeTableFragment: BaseFragment() {
         with(state) {
             saveViewState(this)
 
-            if (getTimeTableInProgress && (timeTableRows == null || timeTableRows.isEmpty())) {
-                progressBar.visibility = View.VISIBLE
-                timeTableRecyclerView.visibility = View.GONE
-            } else {
-                progressBar.visibility = View.GONE
-                if (timeTableRows != null) {
-                    timeTableRecyclerView.visibility = View.VISIBLE
-                    adapter.setItems(timeTableRows)
-                }
+            val showProgress = getTimeTableInProgress && timeTableRows.isNullOrEmpty()
+            val showData = !timeTableRows.isNullOrEmpty()
+            val showNoData = !getTimeTableInProgress && timeTableRows.isNullOrEmpty()
+
+            progressBar.visibility = if (showProgress) View.VISIBLE else View.GONE
+            timeTableRecyclerView.visibility = if (showData) View.VISIBLE else View.GONE
+            noDataText.visibility = if (showNoData) View.VISIBLE else View.GONE
+
+            if (showData && timeTableRows != null) {
+                adapter.setItems(timeTableRows)
             }
 
             toolbar.setLineNumber(timeTableDetails?.lineName ?: "")
@@ -114,7 +115,7 @@ class TimeTableFragment: BaseFragment() {
             tramDirectionText.text = timeTableDetails?.lineDirection ?: ""
 
             if (getTimeTableError?.shouldBeDisplayed() == true) {
-                Toast.makeText(requireContext(), "Error occurred", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.time_table_fetch_error, Toast.LENGTH_LONG).show()
             }
         }
     }

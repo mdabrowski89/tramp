@@ -1,3 +1,5 @@
 <resources>
     <string name="tram_line_no_stops">No stops for line: %s in direction: %s</string>
+    <string name="time_table_fetch_error">Unable to refresh time table. Check your Internet connection.</string>
+    <string name="time_table_no_data">No data</string>
 </resources>
