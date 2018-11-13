@@ -58,7 +58,7 @@ fun getTramStopsWithTrams(tramStopWithTimeDiffList: List<TramStopWithTimeDiff>):
 
             if (currentStopMinutesFromTram < nextStopMinutesFromTram) {
                 // tram detected between those stops
-                if (currentStopMinutesFromTram <=  nextStopTimeDiff.minutesToTram) {
+                if (currentStopMinutesFromTram <  nextStopTimeDiff.minutesToTram) {
                     stopsWithTrams.add(currentStop)
                 } else {
                     stopsWithTrams.add(nextStop)

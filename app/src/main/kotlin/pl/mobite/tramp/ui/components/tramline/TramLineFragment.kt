@@ -147,7 +147,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         if (filteringDisposable == null || filteringDisposable?.isDisposed == true) {
             intentsRelay.accept(FilterCurrentStopsIntent(tramLineName, tramLineStops))
             filteringDisposable = CompositeDisposable()
-            filteringDisposable?.add(Observable.interval(30, TimeUnit.SECONDS)
+            filteringDisposable?.add(Observable.interval(20, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     intentsRelay.accept(FilterCurrentStopsIntent(tramLineName, tramLineStops))

@@ -9,6 +9,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
+import pl.mobite.tramp.data.repositories.TimeTableRepository
 import pl.mobite.tramp.data.repositories.TramLineRepository
 import pl.mobite.tramp.data.repositories.models.TramLine
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
@@ -24,6 +25,7 @@ import pl.mobite.tramp.utils.lazyPowerMock
 class TramLineActionProcessorTest {
 
     private val tramLineRepositoryMock: TramLineRepository by lazyMock()
+    private val timeTableRepositoryMock: TimeTableRepository by lazyMock()
     private val tramLineDescMock: TramLineDesc by lazyPowerMock()
     private val tramLineMock: TramLine by lazyPowerMock()
 
@@ -35,7 +37,7 @@ class TramLineActionProcessorTest {
             GetTramLineAction(tramLineDescMock)
         )
         val expectedResults = listOf(
-            GetTramLineResult.InFlight,
+            GetTramLineResult.InFlight(tramLineDescMock),
             GetTramLineResult.Success(tramLineMock)
         )
 
@@ -50,7 +52,7 @@ class TramLineActionProcessorTest {
             GetTramLineAction(tramLineDescMock)
         )
         val expectedResults = listOf(
-            GetTramLineResult.InFlight,
+            GetTramLineResult.InFlight(tramLineDescMock),
             GetTramLineResult.Failure(dummyException)
         )
 
@@ -58,7 +60,8 @@ class TramLineActionProcessorTest {
     }
 
     private fun test(actions: List<TramLineAction>, expectedResults: List<TramLineResult>) {
-        val processor = TramLineActionProcessor(tramLineRepositoryMock, ImmediateSchedulerProvider.instance)
+        val processor = TramLineActionProcessor(tramLineRepositoryMock, timeTableRepositoryMock,
+            ImmediateSchedulerProvider.instance)
         val testObserver = TestObserver<TramLineResult>()
 
         processor.apply(Observable.fromIterable(actions)).subscribe(testObserver)
