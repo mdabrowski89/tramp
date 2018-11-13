@@ -18,6 +18,7 @@ import pl.mobite.tramp.R
 import pl.mobite.tramp.ViewModelFactory
 import pl.mobite.tramp.data.repositories.models.TimeTableDesc
 import pl.mobite.tramp.ui.base.BaseFragment
+import pl.mobite.tramp.ui.components.MainActivity
 
 
 class TimeTableFragment: BaseFragment() {
@@ -44,6 +45,11 @@ class TimeTableFragment: BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (requireActivity() as MainActivity).showDarkSystemUI()
     }
 
     override fun onStart() {

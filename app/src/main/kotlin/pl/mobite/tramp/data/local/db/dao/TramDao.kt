@@ -14,11 +14,15 @@ interface TramDao {
     @Query("SELECT * FROM tram_line WHERE name IN (:name) AND direction IN (:direction)")
     fun getTramLine(name: String, direction: String): List<TramLineEntity>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(tramLine: TramLineEntity): Long
+
+
     @Query("SELECT * FROM tram_stop WHERE tram_line_id IN (:tramLineId)")
     fun getTramStops(tramLineId: Long): List<TramStopEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(tramLine: TramLineEntity): Long
+    @Query("SELECT * FROM tram_stop WHERE id IN (:tramStopId)")
+    fun getTramStop(tramStopId: String): List<TramStopEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(tramStops: List<TramStopEntity>)

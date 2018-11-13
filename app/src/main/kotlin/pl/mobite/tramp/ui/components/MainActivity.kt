@@ -20,11 +20,15 @@ class MainActivity: AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         navController = Navigation.findNavController(this, R.id.mainNavHostFragment)
-
-        setSystemUiVisibility()
     }
 
-    private fun setSystemUiVisibility() {
+    fun showDarkSystemUI() {
+        if (isLollipopOrHigher()) {
+            mainView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+    }
+
+    fun showLightSystemUI() {
         if (isLollipopOrHigher()) {
             var systemUiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             if (isMarshmallowOrHigher()) {

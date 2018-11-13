@@ -26,6 +26,7 @@ import pl.mobite.tramp.ViewModelFactory
 import pl.mobite.tramp.data.repositories.models.TimeTableDesc
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
 import pl.mobite.tramp.ui.base.BaseFragment
+import pl.mobite.tramp.ui.components.MainActivity
 import pl.mobite.tramp.ui.components.tramline.TramLineIntent.GetTramLineIntent
 import pl.mobite.tramp.ui.models.TramLineDetails
 import pl.mobite.tramp.ui.models.TramStopDetails
@@ -63,6 +64,11 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         if (googleMap == null) {
             (childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment).getMapAsync(this)
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (requireActivity() as MainActivity).showLightSystemUI()
     }
 
     override fun onStart() {

@@ -9,7 +9,7 @@ import pl.mobite.tramp.data.repositories.models.TramLine
 @Entity(
     tableName = "tram_line",
     indices = [Index(
-        name = "name_direction_index",
+        name = "tram_line_name_direction_index",
         unique = true,
         value = ["name", "direction"]
     )]
@@ -21,7 +21,4 @@ data class TramLineEntity(
     @PrimaryKey(autoGenerate = true) var id: Long = 0
 }
 
-fun TramLine.toTramLineEntity() = TramLineEntity(
-    this.desc.name,
-    this.desc.direction
-)
+fun TramLine.toTramLineEntity() = TramLineEntity(desc.name, desc.direction)

@@ -14,10 +14,13 @@ class TimeTableRepositoryImpl(
 ): TimeTableRepository {
 
     override fun getTimeTableFromLocal(timeTableDesc: TimeTableDesc): Maybe<TimeTable> {
-        return timeTableLocalRepository.getTimeTable(timeTableDesc)
+        return timeTableLocalRepository
+            .getTimeTable(timeTableDesc)
     }
 
     override fun getTimeTableFromRemote(timeTableDesc: TimeTableDesc): Single<TimeTable> {
-        return timeTableRemoteRepository.getTimeTable(timeTableDesc)
+        return timeTableRemoteRepository
+            .getTimeTable(timeTableDesc)
+            .flatMap { timeTable -> timeTableLocalRepository.storeTimeTable(timeTableDesc, timeTable) }
     }
 }

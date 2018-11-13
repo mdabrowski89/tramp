@@ -11,30 +11,19 @@ import pl.mobite.tramp.data.repositories.models.TramStop
         childColumns = ["tram_line_id"]
     )],
     indices = [Index(
-        name = "tram_line_id_index",
+        name = "tram_stop_tram_line_id_index",
         unique = false,
         value = ["tram_line_id"]
     )]
 )
 data class TramStopEntity(
-    @PrimaryKey var id: String,
+    @PrimaryKey val id: String,
     @ColumnInfo(name = "tram_line_id") val tramLineId: Long,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "lat") val lat: Double,
     @ColumnInfo(name = "lng") val lng: Double
 )
 
-fun TramStop.toTramStopEntity(tramLineId: Long) = TramStopEntity(
-    this.id,
-    tramLineId,
-    this.name,
-    this.lat,
-    this.lng
-)
+fun TramStop.toTramStopEntity(tramLineId: Long) = TramStopEntity(id, tramLineId, name, lat, lng)
 
-fun TramStopEntity.toTramStop() = TramStop(
-    this.id,
-    this.name,
-    this.lat,
-    this.lng
-)
+fun TramStopEntity.toTramStop() = TramStop(id, name, lat, lng)

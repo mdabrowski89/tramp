@@ -49,6 +49,7 @@ class TimeTableViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 rowMinutesLayout.setBackgroundColor(colorLightViolet2)
             }
             rowHour.text = timeTableRow.hour.toString()
+            rowMinutesLayout.removeAllViews()
             timeTableRow.minutes.forEach { value ->
                 val minuteTextView = TextView(ContextThemeWrapper(context, R.style.TimeTableRowText), null, 0)
                 var minuteText = value.toString()

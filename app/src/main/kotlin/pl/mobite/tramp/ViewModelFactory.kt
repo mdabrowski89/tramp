@@ -29,7 +29,7 @@ class ViewModelFactory private constructor(private val args: Array<out Any?>): V
         val tramLineLocalRepository by lazy { TramLineLocalRepositoryImpl(jsonDataProvider, db) }
         val tramLineRepo by lazy { TramLineRepositoryImpl(tramLineLocalRepository) }
 
-        val timeTableLocalRepository by lazy { TimeTableLocalRepositoryImpl() }
+        val timeTableLocalRepository by lazy { TimeTableLocalRepositoryImpl(db) }
         val trampBackend by lazy { RetrofitProvider.instance.create(TrampBackend::class.java) }
         val timeTableRemoteRepository by lazy { TimeTableRemoteRepositoryImpl(trampBackend) }
         val timeTableRepo by lazy { TimeTableRepositoryImpl(timeTableLocalRepository, timeTableRemoteRepository) }
