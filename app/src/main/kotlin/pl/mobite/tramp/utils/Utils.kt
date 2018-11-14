@@ -1,8 +1,10 @@
 package pl.mobite.tramp.utils
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.net.ConnectivityManager
 import android.os.Build
 import androidx.core.content.res.ResourcesCompat
 import pl.mobite.tramp.TrampApp
@@ -36,4 +38,9 @@ fun getCurrentTime(): TimeEntry {
     val hour = time.subSequence(0, 2).toString().toIntOrNull() ?: 0
     val minute = time.subSequence(3, 5).toString().toIntOrNull() ?: 0
     return TimeEntry(hour, minute)
+}
+
+fun hasNetwork(): Boolean {
+    val cm = TrampApp.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return cm.activeNetworkInfo?.isConnected ?: false
 }

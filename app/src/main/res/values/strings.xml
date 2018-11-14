@@ -1,4 +1,8 @@
 <resources>
+    <string name="button_ok">OK</string>
+    <string name="no_network_title">No network</string>
+    <string name="no_network_msg">Check your Internet connection</string>
+
     <string name="tram_line_no_stops">No stops for line: %s in direction: %s</string>
     <string name="tram_line_fetch_error">Unable to get tram stops.</string>
 

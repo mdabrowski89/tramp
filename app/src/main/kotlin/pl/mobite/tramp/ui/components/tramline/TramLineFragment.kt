@@ -1,5 +1,6 @@
 package pl.mobite.tramp.ui.components.tramline
 
+import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -37,6 +38,7 @@ import pl.mobite.tramp.ui.models.toTramStop
 import pl.mobite.tramp.utils.dpToPx
 import pl.mobite.tramp.utils.getBitmap
 import pl.mobite.tramp.utils.getCurrentTime
+import pl.mobite.tramp.utils.hasNetwork
 import java.util.concurrent.TimeUnit
 
 
@@ -69,6 +71,14 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
         if (googleMap == null) {
             (childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment).getMapAsync(this)
+            if (!hasNetwork()) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.no_network_title)
+                    .setMessage(R.string.no_network_msg)
+                    .setPositiveButton(R.string.button_ok, null)
+                    .show()
+            }
+
         }
     }
 
