@@ -16,3 +16,9 @@ data class TramStop(
     val lat: Double,
     val lng: Double
 )
+
+data class FilterStopsQuery(
+    val targetTime: TimeEntry,
+    val lineName: String,
+    val stops: List<TramStop>
+)

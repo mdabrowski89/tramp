@@ -4,7 +4,7 @@ import io.reactivex.functions.BiFunction
 import pl.mobite.tramp.data.repositories.models.TramLine
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
 import pl.mobite.tramp.data.repositories.models.TramStop
-import pl.mobite.tramp.ui.components.tramline.TramLineResult.FilterCurrentStopsResult
+import pl.mobite.tramp.ui.components.tramline.TramLineResult.FilterStopsResult
 import pl.mobite.tramp.ui.components.tramline.TramLineResult.GetTramLineResult
 import pl.mobite.tramp.ui.models.ViewStateError
 import pl.mobite.tramp.ui.models.toTramLineDetails
@@ -24,13 +24,13 @@ class TramLineReducer: BiFunction<TramLineViewState, TramLineResult, TramLineVie
                     is GetTramLineResult.Failure ->
                         prevState.withTramLineError(result.t)
                 }
-            is FilterCurrentStopsResult ->
+            is FilterStopsResult ->
                 when (result) {
-                    is FilterCurrentStopsResult.InFlight ->
+                    is FilterStopsResult.InFlight ->
                         prevState
-                    is FilterCurrentStopsResult.Success ->
+                    is FilterStopsResult.Success ->
                         prevState.withMarkedTramStops(result.tramStops)
-                    is FilterCurrentStopsResult.Failure ->
+                    is FilterStopsResult.Failure ->
                         prevState
                 }
         }

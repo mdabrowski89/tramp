@@ -16,12 +16,12 @@ sealed class TramLineResult {
         data class Failure(val t: Throwable): GetTramLineResult()
     }
 
-    sealed class FilterCurrentStopsResult: TramLineResult() {
+    sealed class FilterStopsResult: TramLineResult() {
 
-        object InFlight: FilterCurrentStopsResult()
+        object InFlight: FilterStopsResult()
 
-        data class Success(val tramStops: List<TramStop>): FilterCurrentStopsResult()
+        data class Success(val tramStops: List<TramStop>): FilterStopsResult()
 
-        data class Failure(val t: Throwable): FilterCurrentStopsResult()
+        data class Failure(val t: Throwable): FilterStopsResult()
     }
 }

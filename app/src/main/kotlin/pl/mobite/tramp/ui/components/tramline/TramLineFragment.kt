@@ -21,28 +21,29 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import pl.mobite.tramp.R
 import pl.mobite.tramp.ViewModelFactory
+import pl.mobite.tramp.data.repositories.models.FilterStopsQuery
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
 import pl.mobite.tramp.ui.base.BaseFragment
 import pl.mobite.tramp.ui.components.MainActivity
-import pl.mobite.tramp.ui.components.tramline.TramLineIntent.FilterCurrentStopsIntent
+import pl.mobite.tramp.ui.components.tramline.TramLineIntent.FilterStopsIntent
 import pl.mobite.tramp.ui.components.tramline.TramLineIntent.GetTramLineIntent
 import pl.mobite.tramp.ui.models.TimeTableDetails
 import pl.mobite.tramp.ui.models.TramLineDetails
 import pl.mobite.tramp.ui.models.TramStopDetails
+import pl.mobite.tramp.ui.models.toTramStop
 import pl.mobite.tramp.utils.dpToPx
 import pl.mobite.tramp.utils.getBitmap
+import pl.mobite.tramp.utils.getCurrentTime
 import java.util.concurrent.TimeUnit
 
 
 class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
-    private var mapBottomPadding: Int? = null
-    private var mapTopPadding: Int? = null
+    private var mapPadding: MapPadding? = null
 
     private val intentsRelay = PublishRelay.create<TramLineIntent>()
     private var lastViewState: TramLineViewState? = null
@@ -100,8 +101,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onApplyInsets(v: View, insets: WindowInsets): WindowInsets {
         if (!insets.isConsumed) {
-            mapTopPadding = insets.systemWindowInsetTop
-            mapBottomPadding = insets.systemWindowInsetBottom
+            mapPadding = MapPadding(insets.systemWindowInsetTop, insets.systemWindowInsetBottom)
             tryUpdateGoogleMapPadding()
         }
         return insets
@@ -123,7 +123,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         with(state) {
             googleMap?.let { map ->
                 if (tramLineDetails != null && tramLineStops != null) {
-                    runStopsWithTramsFiltering(tramLineDetails.name, tramLineStops)
+                    refreshStopsWithTramsFiltering(tramLineDetails.name, tramLineStops)
 
                     map.clear()
                     if (tramLineStops.isEmpty()) {
@@ -143,15 +143,28 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    private fun runStopsWithTramsFiltering(tramLineName: String, tramLineStops: List<TramStopDetails>) {
-        if (filteringDisposable == null || filteringDisposable?.isDisposed == true) {
-            intentsRelay.accept(FilterCurrentStopsIntent(tramLineName, tramLineStops))
+    private fun refreshStopsWithTramsFiltering(tramLineName: String, tramLineStops: List<TramStopDetails>) {
+        filteringDisposable?.let {
+            val oldTramStopArray = lastViewState?.tramLineStops.orEmpty().toTypedArray()
+            val newTramStopsArray = tramLineStops.toTypedArray()
+            if (!(oldTramStopArray contentEquals newTramStopsArray)) {
+                // if tram line stops has changed restart filtering
+                it.dispose()
+            }
+        }
+
+        if ((filteringDisposable == null || filteringDisposable?.isDisposed == true) && tramLineStops.isNotEmpty()) {
+            fun createFilterIntent() = FilterStopsIntent(
+                FilterStopsQuery(getCurrentTime(), tramLineName, tramLineStops.map { it.toTramStop() })
+            )
+            intentsRelay.accept(createFilterIntent())
             filteringDisposable = CompositeDisposable()
-            filteringDisposable?.add(Observable.interval(20, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    intentsRelay.accept(FilterCurrentStopsIntent(tramLineName, tramLineStops))
-                }
+            filteringDisposable?.add(
+                Observable
+                    .interval(20, TimeUnit.SECONDS)
+                    .subscribe {
+                        intentsRelay.accept(createFilterIntent())
+                    }
             )
         }
     }
@@ -165,6 +178,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         val blueDotBitmap = getBitmap(R.drawable.ic_blue_dot)
         val redDotBitmap = getBitmap(R.drawable.ic_red_dot)
         val boundsBuilder by lazy { LatLngBounds.builder() }
+        // update camera if stops are loaded for the first time
         val updateCamera = lastViewState?.tramLineStops.isNullOrEmpty()
         tramLineStops.forEach { tramStop ->
             val latLng = LatLng(tramStop.lat, tramStop.lng)
@@ -203,10 +217,8 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private fun tryUpdateGoogleMapPadding() {
-        val topPadding = mapTopPadding
-        val bottomPadding = mapBottomPadding
         googleMap?.apply {
-            if (topPadding != null && bottomPadding != null) {
+            mapPadding?.apply {
                 setPadding(0, topPadding, 0, bottomPadding)
             }
         }
@@ -216,4 +228,6 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
         val defaultTramLineDesc = TramLineDesc("35", "Banacha")
     }
+
+    private data class MapPadding(val topPadding: Int, val bottomPadding: Int)
 }
