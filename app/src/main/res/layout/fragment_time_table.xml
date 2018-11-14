@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="1dp"
-    android:background="@color/darkViolet">
+    android:background="@color/lightViolet">
 
     <pl.mobite.tramp.ui.custom.TimeTableToolbar
         android:layout_width="0dp"
@@ -78,6 +78,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tramStopDetailsView"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:clipToPadding="false"
+        android:background="@color/darkViolet"
         android:id="@+id/timeTableRecyclerView"/>
 
     <ProgressBar

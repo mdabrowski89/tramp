@@ -5,8 +5,6 @@ import io.reactivex.Single
 import pl.mobite.tramp.data.local.repositories.TimeTableLocalRepository
 import pl.mobite.tramp.data.remote.repositories.TimeTableRemoteRepository
 import pl.mobite.tramp.data.repositories.models.TimeTable
-import pl.mobite.tramp.data.repositories.models.TimeTableDesc
-import pl.mobite.tramp.data.repositories.models.TramStop
 
 
 class TimeTableRepositoryImpl(

@@ -7,7 +7,6 @@ import pl.mobite.tramp.data.local.db.entities.TimeTableStatusEntity
 import pl.mobite.tramp.data.local.db.entities.toTimeEntry
 import pl.mobite.tramp.data.local.db.entities.toTimeEntryEntity
 import pl.mobite.tramp.data.repositories.models.TimeTable
-import pl.mobite.tramp.data.repositories.models.TimeTableDesc
 
 
 class TimeTableLocalRepositoryImpl(
@@ -20,6 +19,9 @@ class TimeTableLocalRepositoryImpl(
             if (tramStop != null) {
                 val updateTimestamp = database.timeTableStatusDao().getTimeTableStatus(tramStopId).firstOrNull()?.updateTimestamp
                 val timeEntries = database.timeEntryDao().getTimeEntries(tramStopId).map { it.toTimeEntry() }
+                if (timeEntries.isEmpty()) {
+                    return@fromCallable null
+                }
                 val dataCanBeOutdated = if (updateTimestamp != null) {
                      System.currentTimeMillis() - updateTimestamp > dataValidityInMills
                 } else {
@@ -27,7 +29,7 @@ class TimeTableLocalRepositoryImpl(
                 }
                 return@fromCallable TimeTable(timeEntries, dataCanBeOutdated)
             }
-            null
+            return@fromCallable null
         }
     }
 

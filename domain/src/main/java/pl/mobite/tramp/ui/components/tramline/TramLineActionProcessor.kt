@@ -47,7 +47,11 @@ class TramLineActionProcessor(
             val (targetTime, lineName, stops) = query
             Observable
                 .fromIterable(stops)
-                .concatMap { tramStop -> mapToTramStopWithTramTimeDiff(tramStop, lineName, targetTime) }
+                .concatMap { tramStop -> mapToTramStopWithTimeTable(tramStop, lineName) }
+                .toList()
+                .toObservable()
+                .concatMapIterable { list -> list }
+                .concatMapMaybe { (tramStop, timeTable) -> getTramStopWithLastTramTimeDiff(timeTable, targetTime, tramStop) }
                 .toList()
                 .map { tramStopWithTimeDiffList -> getTramStopsWithTrams(tramStopWithTimeDiffList) }
                 .toObservable()
@@ -60,15 +64,14 @@ class TramLineActionProcessor(
         }
     }
 
-    private fun mapToTramStopWithTramTimeDiff(
+    private fun mapToTramStopWithTimeTable(
         tramStop: TramStop,
-        lineName: String,
-        targetTime: TimeEntry
-    ): Observable<TramStopWithLastTramTimeDiff> {
+        lineName: String
+    ): Observable<TramStopWithTimeTable> {
         return timeTableRepository.getTimeTableFromLocal(tramStop.id)
             .switchIfEmpty(timeTableRepository.getTimeTableFromRemote(tramStop.id, lineName))
             .flatMap { timeTable -> fetchRemoteTimeTableIfOutdated(timeTable, tramStop.id, lineName) }
-            .flatMapMaybe { timeTable -> getTramStopWithLastTramTimeDiff(timeTable, targetTime, tramStop) }
+            .map { timeTable -> TramStopWithTimeTable(tramStop, timeTable) }
             .toObservable()
     }
 
@@ -156,4 +159,6 @@ class TramLineActionProcessor(
     data class LastTramTimeDiff(val minutesFromTram: Int, val minutesToTram: Int)
 
     data class TramStopWithLastTramTimeDiff(val tramStop: TramStop, val lastTramTimeDiff: LastTramTimeDiff)
+
+    data class TramStopWithTimeTable(val tramStop: TramStop, val timeTable: TimeTable)
 }

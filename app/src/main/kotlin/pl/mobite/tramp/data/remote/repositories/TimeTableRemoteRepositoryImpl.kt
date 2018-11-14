@@ -18,10 +18,9 @@ class TimeTableRemoteRepositoryImpl(
         val apiKey = TrampApp.instance.getString(R.string.tramp_backend_api_key)
         val busStopId = tramStopId.subSequence(0, 4).toString()
         val busStopNumber = tramStopId.subSequence(4, 6).toString()
-        val lineNumber = lineName
 
         return trampBackend
-            .getTimeTable(id, apiKey, busStopId, busStopNumber, lineNumber)
+            .getTimeTable(id, apiKey, busStopId, busStopNumber, lineName)
             .map { timeTableBackendResponse ->
 
                 val results = timeTableBackendResponse.result?.requireNoNulls()

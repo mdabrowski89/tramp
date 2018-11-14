@@ -27,11 +27,11 @@ class TramLineReducer: BiFunction<TramLineViewState, TramLineResult, TramLineVie
             is FilterStopsResult ->
                 when (result) {
                     is FilterStopsResult.InFlight ->
-                        prevState
+                        prevState.withMarkedTramStopsProgress()
                     is FilterStopsResult.Success ->
                         prevState.withMarkedTramStops(result.tramStops)
                     is FilterStopsResult.Failure ->
-                        prevState
+                        prevState.withMarkedTramStopsError(result.t)
                 }
         }
     }
@@ -57,6 +57,18 @@ fun TramLineViewState.withTramLineError(t: Throwable) = this.copy(
     getTramLineError = ViewStateError(t)
 )
 
+fun TramLineViewState.withMarkedTramStopsProgress() = this.copy(
+    getMarkedTramStopIdsInProgress = true,
+    getMarkedTramStopIdsError = null
+)
+
 fun TramLineViewState.withMarkedTramStops(tramStops: List<TramStop>) = this.copy(
-    markedTramStopIds = tramStops.map { it.id }
+    getMarkedTramStopIdsInProgress = false,
+    markedTramStopIds = tramStops.map { it.id },
+    getMarkedTramStopIdsError = null
+)
+
+fun TramLineViewState.withMarkedTramStopsError(t: Throwable) = this.copy(
+    getMarkedTramStopIdsInProgress = false,
+    getMarkedTramStopIdsError = ViewStateError(t)
 )

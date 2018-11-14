@@ -11,15 +11,19 @@ data class TramLineViewState(
     val getTramLineInProgress: Boolean,
     val tramLineDetails: TramLineDetails?,
     val tramLineStops: List<TramStopDetails>?,
+    val getMarkedTramStopIdsInProgress: Boolean,
     val markedTramStopIds: List<String>?,
-    val getTramLineError: ViewStateError?
+    val getTramLineError: ViewStateError?,
+    val getMarkedTramStopIdsError: ViewStateError?
 ): Parcelable {
 
     constructor(source: Parcel): this(
         1 == source.readInt(),
         source.readParcelable<TramLineDetails>(TramLineDetails::class.java.classLoader),
         source.createTypedArrayList(TramStopDetails.CREATOR),
+        1 == source.readInt(),
         source.createStringArrayList(),
+        source.readParcelable<ViewStateError>(ViewStateError::class.java.classLoader),
         source.readParcelable<ViewStateError>(ViewStateError::class.java.classLoader)
     )
 
@@ -29,14 +33,16 @@ data class TramLineViewState(
         writeInt((if (getTramLineInProgress) 1 else 0))
         writeParcelable(tramLineDetails, 0)
         writeTypedList(tramLineStops)
+        writeInt((if (getMarkedTramStopIdsInProgress) 1 else 0))
         writeStringList(markedTramStopIds)
         writeParcelable(getTramLineError, 0)
+        writeParcelable(getMarkedTramStopIdsError, 0)
     }
 
     companion object {
         val PARCEL_KEY = TramLineViewState.toString()
 
-        fun default() = TramLineViewState(false, null, null, null, null)
+        fun default() = TramLineViewState(false, null, null, false, null, null, null)
 
         @JvmField
         val CREATOR: Parcelable.Creator<TramLineViewState> = object: Parcelable.Creator<TramLineViewState> {

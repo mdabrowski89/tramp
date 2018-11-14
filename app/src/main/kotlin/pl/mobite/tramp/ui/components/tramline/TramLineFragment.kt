@@ -22,7 +22,9 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.fragment_tram_line.*
 import pl.mobite.tramp.R
 import pl.mobite.tramp.ViewModelFactory
 import pl.mobite.tramp.data.repositories.models.FilterStopsQuery
@@ -53,6 +55,9 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
     private lateinit var disposable: CompositeDisposable
     private var filteringDisposable: CompositeDisposable? = null
 
+    private val handler = Handler()
+    private val showLocatingTramsInfoRunnable = Runnable { locatingTramsInfo.visibility = View.VISIBLE }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -78,7 +83,6 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
                     .setPositiveButton(R.string.button_ok, null)
                     .show()
             }
-
         }
     }
 
@@ -98,6 +102,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         filteringDisposable?.dispose()
         disposable.dispose()
         viewModel.dispose()
+        handler.removeCallbacksAndMessages(null)
         super.onStop()
     }
 
@@ -126,13 +131,16 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
             true
         }
         tryUpdateGoogleMapPadding()
-        Handler().post { intentsRelay.accept(GetTramLineIntent(defaultTramLineDesc)) }
+        handler.post { intentsRelay.accept(GetTramLineIntent(defaultTramLineDesc)) }
     }
 
     private fun render(state: TramLineViewState) {
         with(state) {
+            var isLocatingTramsInProgress = false
             googleMap?.let { map ->
                 if (tramLineDetails != null && tramLineStops != null) {
+                    isLocatingTramsInProgress = getMarkedTramStopIdsInProgress
+
                     refreshStopsWithTramsFiltering(tramLineDetails.name, tramLineStops)
 
                     map.clear()
@@ -149,6 +157,13 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
                 }
 
                 saveViewState(this)
+            }
+
+            if (isLocatingTramsInProgress) {
+                handler.postDelayed(showLocatingTramsInfoRunnable, 1000)
+            } else {
+                handler.removeCallbacks(showLocatingTramsInfoRunnable)
+                locatingTramsInfo.visibility = View.GONE
             }
         }
     }
@@ -172,8 +187,12 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
             filteringDisposable?.add(
                 Observable
                     .interval(20, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        intentsRelay.accept(createFilterIntent())
+                        if (lastViewState?.getMarkedTramStopIdsInProgress != true) {
+                            // refresh filtering only if it is not currently in progress
+                            intentsRelay.accept(createFilterIntent())
+                        }
                     }
             )
         }

@@ -5,6 +5,7 @@
 
     <string name="tram_line_no_stops">No stops for line: %s in direction: %s</string>
     <string name="tram_line_fetch_error">Unable to get tram stops.</string>
+    <string name="tram_line_locating_trams">Refreshing trams location. It may take a while.</string>
 
     <string name="time_table_fetch_error">Unable to refresh time table. Check your Internet connection.</string>
     <string name="time_table_no_data">No data</string>
