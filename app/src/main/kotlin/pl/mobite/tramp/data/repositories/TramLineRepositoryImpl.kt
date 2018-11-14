@@ -11,7 +11,7 @@ class TramLineRepositoryImpl(
     private val tramLineLocalRepository: TramLineLocalRepository
 ): TramLineRepository {
 
-    override fun getTramLine(tramLineDesc: TramLineDesc): Single<TramLine> {
+    override fun getTramLineFromLocal(tramLineDesc: TramLineDesc): Maybe<TramLine> {
         return tramLineLocalRepository
             .getTramLineFromDb(tramLineDesc)
             .switchIfEmpty(
@@ -22,6 +22,9 @@ class TramLineRepositoryImpl(
                         .andThen(Maybe.just(tramLine))
                     }
             )
-            .switchIfEmpty(Single.just(TramLine(emptyList())))
+    }
+
+    override fun getTramLineFromRemote(tramLineDesc: TramLineDesc): Single<TramLine> {
+        return Single.error(Throwable("Remote repository not implemented"))
     }
 }

@@ -7,7 +7,8 @@ data class TramLineDesc(
 )
 
 data class TramLine(
-    val stops: List<TramStop>
+    val stops: List<TramStop>,
+    val canBeOutdated: Boolean
 )
 
 data class TramStop(

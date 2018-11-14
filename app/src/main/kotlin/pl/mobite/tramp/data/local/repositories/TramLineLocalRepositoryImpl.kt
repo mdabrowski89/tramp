@@ -23,7 +23,7 @@ class TramLineLocalRepositoryImpl(
             val tramLineEntity = tramDao.getTramLine(tramLineDesc.name, tramLineDesc.direction).firstOrNull()
             if (tramLineEntity != null) {
                 val tramStops = tramDao.getTramStops(tramLineEntity.id).map { it.toTramStop() }
-                TramLine(tramStops)
+                TramLine(tramStops, false)
             } else {
                 null
             }
@@ -41,7 +41,7 @@ class TramLineLocalRepositoryImpl(
                 }
             }
             if (tramStopsOrdered != null && !tramStopsOrdered.isEmpty()) {
-                TramLine(tramStopsOrdered.sortedBy { it.order }.map { it.tramStop })
+                TramLine(tramStopsOrdered.sortedBy { it.order }.map { it.tramStop }, false)
             } else {
                 null
             }

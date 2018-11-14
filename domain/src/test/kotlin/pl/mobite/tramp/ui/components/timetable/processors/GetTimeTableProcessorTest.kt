@@ -1,0 +1,225 @@
+package pl.mobite.tramp.ui.components.timetable.processors
+
+import io.reactivex.Maybe
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.observers.TestObserver
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
+import pl.mobite.tramp.data.repositories.TimeTableRepository
+import pl.mobite.tramp.data.repositories.models.TimeTable
+import pl.mobite.tramp.data.repositories.models.TimeTableDesc
+import pl.mobite.tramp.ui.components.timetable.TimeTableAction.GetTimeTableAction
+import pl.mobite.tramp.ui.components.timetable.TimeTableResult
+import pl.mobite.tramp.ui.components.timetable.TimeTableResult.GetTimeTableResult
+import pl.mobite.tramp.utils.ImmediateSchedulerProvider
+import pl.mobite.tramp.utils.lazyMock
+import pl.mobite.tramp.utils.lazyPowerMock
+
+
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(TimeTable::class)
+class GetTimeTableProcessorTest {
+
+    private val timeTableRepositoryMock: TimeTableRepository by lazyMock()
+    private val localTimeTableMock: TimeTable by lazyPowerMock()
+    private val remoteTimeTableMock: TimeTable by lazyPowerMock()
+
+    @Test
+    fun testGetTimeTableLocalEmptyRemoteSuccess() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(false)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.empty())
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.just(remoteTimeTableMock))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Success(remoteTimeTableMock)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalEmptyRemoteFailure() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(false)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.empty())
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.error(remoteDummyException))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Failure(remoteDummyException)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalSuccessRemoteSuccess() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(false)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.just(localTimeTableMock))
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.just(remoteTimeTableMock))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Success(localTimeTableMock)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalSuccessRemoteFailure() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(false)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.just(localTimeTableMock))
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.error(remoteDummyException))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Success(localTimeTableMock)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalOutdatedRemoteSuccess() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(true)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.just(localTimeTableMock))
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.just(remoteTimeTableMock))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Success(localTimeTableMock),
+            GetTimeTableResult.Success(remoteTimeTableMock)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalOutdatedRemoteFailure() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(true)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.just(localTimeTableMock))
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.error(remoteDummyException))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Success(localTimeTableMock),
+            GetTimeTableResult.Failure(remoteDummyException)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalFailureRemoteSuccess() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(false)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.error(localDummyException))
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.just(remoteTimeTableMock))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Success(remoteTimeTableMock)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    @Test
+    fun testGetTimeTableLocalFailureRemoteFailure() {
+        Mockito.`when`(localTimeTableMock.canBeOutdated).thenReturn(false)
+        Mockito.`when`(remoteTimeTableMock.canBeOutdated).thenReturn(false)
+        val (lineName, _, _, stopId) = dummyTimeTableDesc
+        timeTableRepositoryMock.apply {
+            Mockito.`when`(getTimeTableFromLocal(stopId)).thenReturn(Maybe.error(localDummyException))
+            Mockito.`when`(getTimeTableFromRemote(stopId, lineName)).thenReturn(Single.error(remoteDummyException))
+        }
+
+        val actions = listOf(
+            GetTimeTableAction(dummyTimeTableDesc)
+        )
+        val expectedResults = listOf(
+            GetTimeTableResult.InFlight(dummyTimeTableDesc),
+            GetTimeTableResult.Failure(remoteDummyException)
+        )
+
+        test(actions, expectedResults)
+    }
+
+    private fun test(actions: List<GetTimeTableAction>, expectedResults: List<GetTimeTableResult>) {
+        val processor = GetTimeTableProcessor(timeTableRepositoryMock, ImmediateSchedulerProvider.instance)
+        val testObserver = TestObserver<TimeTableResult>()
+
+        processor.apply(Observable.fromIterable(actions)).subscribe(testObserver)
+
+        testObserver.assertValueCount(expectedResults.size)
+
+        testObserver.values().forEachIndexed {i, tested ->
+            Assert.assertEquals(expectedResults[i], tested)
+        }
+
+        testObserver.assertComplete()
+        testObserver.assertNoErrors()
+    }
+
+    companion object {
+
+        private val dummyTimeTableDesc = TimeTableDesc("lineName", "lineDirection",
+            "stopName", "stopId")
+        private val localDummyException = Throwable("local dummy exception")
+        private val remoteDummyException = Throwable("remote dummy exception")
+    }
+}
