@@ -2,6 +2,7 @@ package pl.mobite.tramp
 
 import android.app.Application
 import androidx.room.Room
+import io.reactivex.plugins.RxJavaPlugins
 import pl.mobite.tramp.data.local.db.TrampAppDatabase
 
 
@@ -14,12 +15,21 @@ class TrampApp: Application() {
         instance = this
 
         initDatabase()
+        initRxJavaErrorHandler()
     }
 
     private fun initDatabase() {
         database = Room.databaseBuilder(applicationContext, TrampAppDatabase::class.java, "tramp-app-database")
             .fallbackToDestructiveMigration()
             .build()
+    }
+
+    private fun initRxJavaErrorHandler() {
+        RxJavaPlugins.setErrorHandler { t: Throwable? ->
+            if (t is InterruptedException) {
+                // fine, some blocking code was interrupted by a dispose call
+            }
+        }
     }
 
     companion object {

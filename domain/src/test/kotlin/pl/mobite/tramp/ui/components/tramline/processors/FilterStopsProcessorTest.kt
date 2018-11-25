@@ -1,8 +1,6 @@
 package pl.mobite.tramp.ui.components.tramline.processors
 
-import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import org.junit.Assert
 import org.junit.Test
@@ -29,8 +27,8 @@ class FilterStopsProcessorTest {
             testDataSet.timeTables.forEach{ tramStop, timeTable ->
                 val id = tramStop.id
                 timeTableRepositoryMock.apply {
-                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(Maybe.empty())
-                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(Single.just(timeTable))
+                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(null)
+                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(timeTable)
                 }
             }
 
@@ -49,12 +47,13 @@ class FilterStopsProcessorTest {
     @Test
     fun testFilterStopsLocalEmptyRemoteFailure() {
         testDataSets.forEach { testDataSet ->
+            Mockito.reset(timeTableRepositoryMock)
             val lineName = testDataSet.filterQuery.lineName
             testDataSet.timeTables.forEach{ tramStop, _ ->
                 val id = tramStop.id
                 timeTableRepositoryMock.apply {
-                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(Maybe.empty())
-                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(Single.error(remoteDummyException))
+                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(null)
+                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenThrow(remoteDummyException)
                 }
             }
 
@@ -77,8 +76,8 @@ class FilterStopsProcessorTest {
             testDataSet.timeTables.forEach{ tramStop, timeTable ->
                 val id = tramStop.id
                 timeTableRepositoryMock.apply {
-                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(Maybe.just(timeTable))
-                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(Single.just(timeTable))
+                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(timeTable)
+                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(timeTable)
                 }
             }
 
@@ -97,12 +96,13 @@ class FilterStopsProcessorTest {
     @Test
     fun testFilterStopsLocalSuccessRemoteError() {
         testDataSets.forEach { testDataSet ->
+            Mockito.reset(timeTableRepositoryMock)
             val lineName = testDataSet.filterQuery.lineName
             testDataSet.timeTables.forEach{ tramStop, timeTable ->
                 val id = tramStop.id
                 timeTableRepositoryMock.apply {
-                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(Maybe.just(timeTable))
-                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(Single.error(remoteDummyException))
+                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(timeTable)
+                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenThrow(remoteDummyException)
                 }
             }
 
@@ -121,12 +121,13 @@ class FilterStopsProcessorTest {
     @Test
     fun testFilterStopsLocalErrorRemoteSuccess() {
         testDataSets.forEach { testDataSet ->
+            Mockito.reset(timeTableRepositoryMock)
             val lineName = testDataSet.filterQuery.lineName
             testDataSet.timeTables.forEach{ tramStop, timeTable ->
                 val id = tramStop.id
                 timeTableRepositoryMock.apply {
-                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(Maybe.error(localDummyException))
-                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(Single.just(timeTable))
+                    Mockito.`when`(getTimeTableFromLocal(id)).thenThrow(localDummyException)
+                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(timeTable)
                 }
             }
 
@@ -145,12 +146,13 @@ class FilterStopsProcessorTest {
     @Test
     fun testFilterStopsLocalErrorRemoteError() {
         testDataSets.forEach { testDataSet ->
+            Mockito.reset(timeTableRepositoryMock)
             val lineName = testDataSet.filterQuery.lineName
             testDataSet.timeTables.forEach{ tramStop, _ ->
                 val id = tramStop.id
                 timeTableRepositoryMock.apply {
-                    Mockito.`when`(getTimeTableFromLocal(id)).thenReturn(Maybe.error(localDummyException))
-                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenReturn(Single.error(remoteDummyException))
+                    Mockito.`when`(getTimeTableFromLocal(id)).thenThrow(localDummyException)
+                    Mockito.`when`(getTimeTableFromRemote(id, lineName)).thenThrow(remoteDummyException)
                 }
             }
 

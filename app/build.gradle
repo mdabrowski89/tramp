@@ -77,8 +77,8 @@ dependencies {
 
     implementation Dependencies.retrofitLib
     implementation Dependencies.retrofitGsonConverterLib
-    implementation Dependencies.retrofitRxJava2AdapterLib
     implementation Dependencies.retrofitLoggingInterceptorLib
+    implementation Dependencies.retrofitSynchronousAdapterLib
 
     implementation Dependencies.flexBoxLib
 

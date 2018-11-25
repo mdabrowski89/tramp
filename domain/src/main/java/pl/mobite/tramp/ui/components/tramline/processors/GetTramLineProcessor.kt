@@ -1,6 +1,5 @@
 package pl.mobite.tramp.ui.components.tramline.processors
 
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
@@ -30,19 +29,22 @@ class GetTramLineProcessor(
     }
 
     private fun getTramLine(tramLineDesc: TramLineDesc): Observable<TramLine> {
-        return tramLineRepository.getTramLineFromLocal(tramLineDesc)
-            .onErrorResumeNext(Maybe.empty())
-            .switchIfEmpty(tramLineRepository.getTramLineFromRemote(tramLineDesc))
-            .flatMapObservable { tramLine ->
-                if (tramLine.canBeOutdated) {
-                    // if it is outdated it is always local data so refresh from backend
-                    tramLineRepository
-                        .getTramLineFromRemote(tramLineDesc)
-                        .toObservable()
-                        .startWith(tramLine)
-                } else {
-                    Observable.just(tramLine)
+        return Observable
+            .create { emitter ->
+                val localTramLine = try {
+                    tramLineRepository.getTramLineFromLocal(tramLineDesc)
+                } catch (t: Throwable) {
+                    null
                 }
+                if (localTramLine != null) {
+                    emitter.onNext(localTramLine)
+                    if (localTramLine.canBeOutdated) {
+                        emitter.onNext(tramLineRepository.getTramLineFromRemote(tramLineDesc))
+                    }
+                } else {
+                    emitter.onNext(tramLineRepository.getTramLineFromRemote(tramLineDesc))
+                }
+                emitter.onComplete()
             }
     }
 

@@ -1,6 +1,5 @@
 package pl.mobite.tramp.ui.components.timetable.processors
 
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
@@ -31,19 +30,23 @@ class GetTimeTableProcessor(
     }
 
     private fun getTimeTable(lineName: String, stopId: String): Observable<TimeTable> {
-        return timeTableRepository.getTimeTableFromLocal(stopId)
-            .onErrorResumeNext(Maybe.empty())
-            .switchIfEmpty(timeTableRepository.getTimeTableFromRemote(stopId, lineName))
-            .flatMapObservable { timeTable ->
-                if (timeTable.canBeOutdated) {
-                    // if it is outdated it is always local data so refresh from backend
-                    timeTableRepository
-                        .getTimeTableFromRemote(stopId, lineName)
-                        .toObservable()
-                        .startWith(timeTable)
-                } else {
-                    Observable.just(timeTable)
+        return Observable
+            .create {emitter ->
+                val localTimeTable = try {
+                    timeTableRepository.getTimeTableFromLocal(stopId)
+                } catch (t: Throwable) {
+                    null
                 }
+
+                if (localTimeTable != null) {
+                    emitter.onNext(localTimeTable)
+                    if (localTimeTable.canBeOutdated) {
+                        emitter.onNext(timeTableRepository.getTimeTableFromRemote(stopId, lineName))
+                    }
+                } else {
+                    emitter.onNext(timeTableRepository.getTimeTableFromRemote(stopId, lineName))
+                }
+                emitter.onComplete()
             }
     }
 }

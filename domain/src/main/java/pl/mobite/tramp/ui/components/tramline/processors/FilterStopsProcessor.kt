@@ -1,6 +1,5 @@
 package pl.mobite.tramp.ui.components.tramline.processors
 
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
@@ -20,16 +19,7 @@ class FilterStopsProcessor(
     override fun apply(actions: Observable<FilterStopsAction>): ObservableSource<FilterStopsResult> {
         return actions.switchMap { (query) ->
             val (targetTime, lineName, stops) = query
-            Observable
-                .fromIterable(stops)
-                .concatMap { tramStop -> mapToTramStopWithTimeTable(tramStop, lineName) }
-                .toList()
-                .toObservable()
-                .concatMapIterable { list -> list }
-                .concatMapMaybe { (tramStop, timeTable) -> getTramStopWithLastTramTimeDiff(timeTable, targetTime, tramStop) }
-                .toList()
-                .map { tramStopWithTimeDiffList -> getTramStopsWithTrams(tramStopWithTimeDiffList) }
-                .toObservable()
+            getCurrentStops(targetTime, lineName, stops)
                 .map { currentStops -> FilterStopsResult.Success(currentStops) }
                 .cast(FilterStopsResult::class.java)
                 .onErrorReturn { t -> FilterStopsResult.Failure(t) }
@@ -39,28 +29,30 @@ class FilterStopsProcessor(
         }
     }
 
-    private fun mapToTramStopWithTimeTable(
-        tramStop: TramStop,
-        lineName: String
-    ): Observable<TramStopWithTimeTable> {
-        return timeTableRepository.getTimeTableFromLocal(tramStop.id)
-            .onErrorResumeNext(Maybe.empty())
-            .switchIfEmpty(timeTableRepository.getTimeTableFromRemote(tramStop.id, lineName))
-            .map { timeTable -> TramStopWithTimeTable(tramStop, timeTable) }
-            .toObservable()
+    private fun getCurrentStops(targetTime: TimeEntry, lineName: String, stops: List<TramStop>): Observable<List<TramStop>> {
+        return Observable
+            .fromCallable {
+                val stopWithTimeDiffList = stops
+                    .mapNotNull { tramStop ->
+                        val timeTable = getTimeTable(tramStop, lineName)
+                        val lastTramTimeDiff = getLastTramTimeDiff(targetTime, timeTable.times)
+                        if (lastTramTimeDiff != null) {
+                            return@mapNotNull TramStopWithLastTramTimeDiff(tramStop, lastTramTimeDiff)
+                        }
+                        null
+                    }
+                getTramStopsWithTrams(stopWithTimeDiffList)
+            }
     }
 
-    private fun getTramStopWithLastTramTimeDiff(
-        timeTable: TimeTable,
-        targetTime: TimeEntry,
-        tramStop: TramStop
-    ): Maybe<TramStopWithLastTramTimeDiff> {
-        val lastTramTimeDiff = getLastTramTimeDiff(targetTime, timeTable.times)
-        return if (lastTramTimeDiff != null) {
-            Maybe.just(TramStopWithLastTramTimeDiff(tramStop, lastTramTimeDiff))
-        } else {
-            Maybe.empty<TramStopWithLastTramTimeDiff>()
+    private fun getTimeTable(tramStop: TramStop, lineName: String): TimeTable {
+        var timeTable = try {
+            timeTableRepository.getTimeTableFromLocal(tramStop.id)
+        } catch (t: Throwable) { null }
+        if (timeTable == null || timeTable.canBeOutdated) {
+            timeTable = timeTableRepository.getTimeTableFromRemote(tramStop.id, lineName)
         }
+        return timeTable
     }
 
     private fun getLastTramTimeDiff(targetTime: TimeEntry, timeTable: List<TimeEntry>): LastTramTimeDiff? {

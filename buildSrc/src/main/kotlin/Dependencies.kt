@@ -1,6 +1,6 @@
 object Versions {
 
-    const val kotlin = "1.3.0"
+    const val kotlin = "1.3.10"
 
     const val minSdk = 14
     const val compiledSdk = 28
@@ -24,12 +24,18 @@ object Versions {
     const val retrofitLoggingInterceptor = "3.9.1"
 
     const val gson = "2.8.5"
+    const val retrofitSynchronousAdapter = "0.4.0"
 
     const val room = "2.1.0-alpha02"
 
     const val coroutines = "1.0.1"
 
     const val flexBox = "1.1.0"
+    const val picasso = "2.71828"
+
+    const val intercom = "5.1.6"
+
+    const val microblink = "4.4.0@aar"
 
     // test
     const val junit = "4.12"
@@ -69,6 +75,7 @@ object Dependencies {
     const val retrofitLoggingInterceptorLib = "com.squareup.okhttp3:logging-interceptor:${Versions.retrofitLoggingInterceptor}"
 
     const val gsonLib = "com.google.code.gson:gson:${Versions.gson}"
+    const val retrofitSynchronousAdapterLib = "com.jaredsburrows.retrofit:retrofit2-synchronous-adapter:${Versions.retrofitSynchronousAdapter}"
 
     const val roomLib = "androidx.room:room-runtime:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
@@ -77,6 +84,11 @@ object Dependencies {
     const val coroutinesAndroidLib = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
 
     const val flexBoxLib = "com.google.android:flexbox:${Versions.flexBox}"
+    const val picassoLib = "com.squareup.picasso:picasso:${Versions.picasso}"
+
+    const val intercomLib = "io.intercom.android:intercom-sdk-base:${Versions.intercom}"
+
+    const val microblinkLib = "com.microblink:blinkid:${Versions.microblink}"
 
     // test
     const val junitLib = "junit:junit:${Versions.junit}"

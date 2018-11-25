@@ -1,5 +1,7 @@
 package pl.mobite.tramp.data.remote.backend
 
+import com.google.gson.GsonBuilder
+import com.jaredsburrows.retrofit2.adapter.synchronous.SynchronousCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -7,7 +9,6 @@ import pl.mobite.tramp.BuildConfig
 import pl.mobite.tramp.R
 import pl.mobite.tramp.TrampApp
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
@@ -19,8 +20,8 @@ class RetrofitProvider private constructor() {
             Retrofit.Builder()
                     .baseUrl(TrampApp.instance.getString(R.string.tramp_backend_url))
                     .client(createHttpClient())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(GsonBuilder().serializeNulls().create()))
+                    .addCallAdapterFactory(SynchronousCallAdapterFactory.create())
                     .build()
         }
 

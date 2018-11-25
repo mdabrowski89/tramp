@@ -1,8 +1,6 @@
 package pl.mobite.tramp.ui.components.tramline.processors
 
-import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import org.junit.Assert
 import org.junit.Test
@@ -34,8 +32,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(false)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.empty())
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.just(remoteTramLineMock))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(null)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(remoteTramLineMock)
         }
 
         val actions = listOf(
@@ -54,8 +52,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(false)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.empty())
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.error(remoteDummyException))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(null)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenThrow(remoteDummyException)
         }
 
         val actions = listOf(
@@ -74,8 +72,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(false)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.just(localTramLineMock))
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.just(remoteTramLineMock))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(localTramLineMock)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(remoteTramLineMock)
         }
 
         val actions = listOf(
@@ -94,8 +92,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(false)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.just(localTramLineMock))
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.error(remoteDummyException))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(localTramLineMock)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenThrow(remoteDummyException)
         }
 
         val actions = listOf(
@@ -114,8 +112,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(true)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.just(localTramLineMock))
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.just(remoteTramLineMock))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(localTramLineMock)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(remoteTramLineMock)
         }
 
         val actions = listOf(
@@ -135,8 +133,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(true)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.just(localTramLineMock))
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.error(remoteDummyException))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(localTramLineMock)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenThrow(remoteDummyException)
         }
 
         val actions = listOf(
@@ -156,8 +154,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(false)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.error(localDummyException))
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.just(remoteTramLineMock))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenThrow(localDummyException)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(remoteTramLineMock)
         }
 
         val actions = listOf(
@@ -176,8 +174,8 @@ class GetTramLineProcessorTest {
         Mockito.`when`(localTramLineMock.canBeOutdated).thenReturn(false)
         Mockito.`when`(remoteTramLineMock.canBeOutdated).thenReturn(false)
         tramLineRepositoryMock.apply {
-            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenReturn(Maybe.error(localDummyException))
-            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenReturn(Single.error(remoteDummyException))
+            Mockito.`when`(getTramLineFromLocal(tramLineDescMock)).thenThrow(localDummyException)
+            Mockito.`when`(getTramLineFromRemote(tramLineDescMock)).thenThrow(remoteDummyException)
         }
 
         val actions = listOf(
