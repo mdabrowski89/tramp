@@ -59,14 +59,24 @@ dependencies {
 
     implementation Dependencies.kotlinStdLib
 
-    implementation Dependencies.appcompatLib
-    implementation Dependencies.constraintLayoutLib
-    implementation Dependencies.legacySupportLib
+    implementation Dependencies.androidxCoreLib
+    implementation Dependencies.androidxAppcompatLib
+    implementation Dependencies.androidxConstraintLayoutLib
+    implementation Dependencies.androidxLegacySupportLib
+
+    implementation Dependencies.androidxRoomLib
+    kapt Dependencies.androidxRoomCompiler
+
+    implementation Dependencies.androidxLifecycleExtensionsLib
+    implementation Dependencies.androidxLifecycleViewModelsLib
 
     implementation Dependencies.playServiceMapsLib
 
-    implementation Dependencies.lifecycleExtensionsLib
-    implementation Dependencies.lifecycleViewModelsLib
+    // Navigation component
+    implementation Dependencies.archNavigationFragmentLib
+    implementation Dependencies.archNavigationUiLib
+
+    implementation Dependencies.koinLib
 
     implementation Dependencies.rxAndroidLib
     implementation Dependencies.rxKotlinLib
@@ -74,19 +84,12 @@ dependencies {
 
     implementation Dependencies.gsonLib
 
-    implementation Dependencies.roomLib
-    kapt Dependencies.roomCompiler
-
     implementation Dependencies.retrofitLib
     implementation Dependencies.retrofitGsonConverterLib
-    implementation Dependencies.retrofitLoggingInterceptorLib
+    implementation Dependencies.retrofitOkHttpLoggingInterceptorLib
     implementation Dependencies.retrofitSynchronousAdapterLib
 
     implementation Dependencies.flexBoxLib
-
-    // Navigation component
-    implementation Dependencies.navigationFragmentLib
-    implementation Dependencies.navigationUiLib
 
     // Unit tests
     testImplementation Dependencies.junitLib
