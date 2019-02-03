@@ -1,38 +1,21 @@
 package pl.mobite.tramp.ui.components.timetable
 
-import androidx.lifecycle.ViewModel
-import com.jakewharton.rxrelay2.PublishRelay
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import pl.mobite.tramp.data.repositories.TimeTableRepository
-import pl.mobite.tramp.utils.SchedulerProvider
+import pl.mobite.tramp.ui.base.mvi.MviViewModel
+import pl.mobite.tramp.ui.base.mvi.SchedulerProvider
+import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableAction
+import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableActionProcessor
+import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableResult
 
 
 class TimeTableViewModel(
-    timeTableRepository: TimeTableRepository,
     schedulerProvider: SchedulerProvider,
+    timeTableRepository: TimeTableRepository,
     initialState: TimeTableViewState?
-): ViewModel() {
-
-    private lateinit var disposable: Disposable
-
-    private val intentSource = PublishRelay.create<TimeTableIntent>()
-
-    val states: Observable<TimeTableViewState> by lazy {
-        intentSource
-            .map(TimeTableIntentInterpreter())
-            .compose(TimeTableActionProcessor(timeTableRepository, schedulerProvider))
-            .scan(initialState ?: TimeTableViewState.default(), TimeTableReducer())
-            .distinctUntilChanged()
-            .replay(1)
-            .autoConnect(0)
-    }
-
-    fun processIntents(intents: Observable<TimeTableIntent>) {
-        disposable = intents.subscribe(intentSource)
-    }
-
-    fun dispose() {
-        disposable.dispose()
-    }
-}
+): MviViewModel<TimeTableAction, TimeTableResult, TimeTableViewState>(
+    TimeTableActionProcessor(
+        schedulerProvider,
+        timeTableRepository
+    ),
+    initialState ?: TimeTableViewState.default()
+)

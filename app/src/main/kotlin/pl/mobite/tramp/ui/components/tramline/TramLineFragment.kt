@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -20,19 +19,19 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_tram_line.*
 import pl.mobite.tramp.R
-import pl.mobite.tramp.ViewModelFactory
 import pl.mobite.tramp.data.repositories.models.FilterStopsQuery
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
-import pl.mobite.tramp.ui.base.BaseFragment
+import pl.mobite.tramp.ui.base.MviBaseFragment
 import pl.mobite.tramp.ui.components.MainActivity
-import pl.mobite.tramp.ui.components.tramline.TramLineIntent.FilterStopsIntent
-import pl.mobite.tramp.ui.components.tramline.TramLineIntent.GetTramLineIntent
+import pl.mobite.tramp.ui.components.tramline.mvi.TramLineAction
+import pl.mobite.tramp.ui.components.tramline.mvi.TramLineAction.FilterStopsAction
+import pl.mobite.tramp.ui.components.tramline.mvi.TramLineAction.GetTramLineAction
+import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult
 import pl.mobite.tramp.ui.models.TimeTableDetails
 import pl.mobite.tramp.ui.models.TramLineDetails
 import pl.mobite.tramp.ui.models.TramStopDetails
@@ -44,28 +43,17 @@ import pl.mobite.tramp.utils.hasNetwork
 import java.util.concurrent.TimeUnit
 
 
-class TramLineFragment: BaseFragment(), OnMapReadyCallback {
+class TramLineFragment: MviBaseFragment<TramLineAction, TramLineResult, TramLineViewState, TramLineViewModel>(
+    TramLineViewModel::class.java
+), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
     private var mapPadding: MapPadding? = null
 
-    private val intentsRelay = PublishRelay.create<TramLineIntent>()
-    private var lastViewState: TramLineViewState? = null
-    private lateinit var viewModel: TramLineViewModel
-    private lateinit var disposable: CompositeDisposable
     private var filteringDisposable: CompositeDisposable? = null
 
     private val handler = Handler()
     private val showLocatingTramsInfoRunnable = Runnable { locatingTramsInfo.visibility = View.VISIBLE }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val initialViewState: TramLineViewState? = savedInstanceState?.getParcelable(TramLineViewState.PARCEL_KEY)
-        viewModel = ViewModelProviders
-            .of(this, ViewModelFactory.getInstance(initialViewState))
-            .get(TramLineViewModel::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_tram_line, container, false)
@@ -91,26 +79,10 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         (requireActivity() as MainActivity).showLightSystemUI()
     }
 
-    override fun onStart() {
-        super.onStart()
-        disposable = CompositeDisposable()
-        disposable.add(viewModel.states.subscribe(this::render))
-        viewModel.processIntents(intentsRelay)
-    }
-
     override fun onStop() {
         filteringDisposable?.dispose()
-        disposable.dispose()
-        viewModel.dispose()
         handler.removeCallbacksAndMessages(null)
         super.onStop()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        lastViewState?.let { viewState ->
-            outState.putParcelable(TramLineViewState.PARCEL_KEY, viewState)
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -131,10 +103,10 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
             true
         }
         tryUpdateGoogleMapPadding()
-        handler.post { intentsRelay.accept(GetTramLineIntent(defaultTramLineDesc)) }
+        handler.post { mviController.accept(GetTramLineAction(defaultTramLineDesc)) }
     }
 
-    private fun render(state: TramLineViewState) {
+    override fun render(state: TramLineViewState) {
         with(state) {
             var isLocatingTramsInProgress = false
             googleMap?.let { map ->
@@ -152,11 +124,9 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
                     }
                 }
 
-                if (getTramLineError?.shouldBeDisplayed() == true) {
+                getTramLineError?.consume {
                     Toast.makeText(requireContext(), R.string.tram_line_fetch_error, Toast.LENGTH_LONG).show()
                 }
-
-                saveViewState(this)
             }
 
             if (isLocatingTramsInProgress) {
@@ -170,7 +140,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
 
     private fun refreshStopsWithTramsFiltering(tramLineName: String, tramLineStops: List<TramStopDetails>) {
         filteringDisposable?.let {
-            val oldTramStopArray = lastViewState?.tramLineStops.orEmpty().toTypedArray()
+            val oldTramStopArray = mviController.viewState?.tramLineStops.orEmpty().toTypedArray()
             val newTramStopsArray = tramLineStops.toTypedArray()
             if (!(oldTramStopArray contentEquals newTramStopsArray)) {
                 // if tram line stops has changed restart filtering
@@ -179,19 +149,19 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         }
 
         if ((filteringDisposable == null || filteringDisposable?.isDisposed == true) && tramLineStops.isNotEmpty()) {
-            fun createFilterIntent() = FilterStopsIntent(
+            fun createFilterAction() = FilterStopsAction(
                 FilterStopsQuery(getCurrentTime(), tramLineName, tramLineStops.map { it.toTramStop() })
             )
-            intentsRelay.accept(createFilterIntent())
+            mviController.accept(createFilterAction())
             filteringDisposable = CompositeDisposable()
             filteringDisposable?.add(
                 Observable
                     .interval(20, TimeUnit.SECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        if (lastViewState?.getMarkedTramStopIdsInProgress != true) {
+                        if (mviController.viewState?.getMarkedTramStopIdsInProgress != true) {
                             // refresh filtering only if it is not currently in progress
-                            intentsRelay.accept(createFilterIntent())
+                            mviController.accept(createFilterAction())
                         }
                     }
             )
@@ -208,7 +178,7 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
         val redDotBitmap = getBitmap(R.drawable.ic_red_dot)
         val boundsBuilder by lazy { LatLngBounds.builder() }
         // update camera if stops are loaded for the first time
-        val updateCamera = lastViewState?.tramLineStops.isNullOrEmpty()
+        val updateCamera = mviController.viewState?.tramLineStops.isNullOrEmpty()
         tramLineStops.forEach { tramStop ->
             val latLng = LatLng(tramStop.lat, tramStop.lng)
             if (updateCamera) {
@@ -236,12 +206,6 @@ class TramLineFragment: BaseFragment(), OnMapReadyCallback {
             val directions = TramLineFragmentDirections.actionTramLineFragmentToTimeTableFragment(
                 timeTableDesc.stopId, timeTableDesc.stopName, timeTableDesc.lineName, timeTableDesc.lineDirection)
             Navigation.findNavController(it).navigate(directions)
-        }
-    }
-
-    private fun saveViewState(state: TramLineViewState) {
-        if (!state.getTramLineInProgress) {
-            lastViewState = state
         }
     }
 
