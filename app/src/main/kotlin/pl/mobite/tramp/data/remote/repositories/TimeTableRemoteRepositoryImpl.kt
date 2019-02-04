@@ -1,7 +1,7 @@
 package pl.mobite.tramp.data.remote.repositories
 
+import android.content.Context
 import pl.mobite.tramp.R
-import pl.mobite.tramp.TrampApp
 import pl.mobite.tramp.data.remote.backend.TrampBackend
 import pl.mobite.tramp.data.remote.backend.responses.TIME_TABLE_VALUE_KEY_TIME
 import pl.mobite.tramp.data.repositories.models.TimeEntry
@@ -9,12 +9,13 @@ import pl.mobite.tramp.data.repositories.models.TimeTable
 
 
 class TimeTableRemoteRepositoryImpl(
+    private val context: Context,
     private val trampBackend: TrampBackend
 ): TimeTableRemoteRepository {
 
     override fun getTimeTable(tramStopId: String, lineName: String): TimeTable {
-        val id = TrampApp.instance.getString(R.string.tramp_backend_timetable_id)
-        val apiKey = TrampApp.instance.getString(R.string.tramp_backend_api_key)
+        val id = context.getString(R.string.tramp_backend_timetable_id)
+        val apiKey = context.getString(R.string.tramp_backend_api_key)
         val busStopId = tramStopId.subSequence(0, 4).toString()
         val busStopNumber = tramStopId.subSequence(4, 6).toString()
 

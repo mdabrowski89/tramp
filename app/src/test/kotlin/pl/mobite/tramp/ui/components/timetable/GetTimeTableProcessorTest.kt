@@ -3,11 +3,10 @@ package pl.mobite.tramp.ui.components.timetable
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.dsl.module.module
-import org.koin.standalone.StandAloneContext.loadKoinModules
-import org.koin.test.KoinTest
 import org.mockito.Mockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
@@ -20,17 +19,24 @@ import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableActionProcessor
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableResult
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableResult.GetTimeTableResult
 import pl.mobite.tramp.utils.ImmediateSchedulerProvider
+import pl.mobite.tramp.utils.KoinTestRule
 import pl.mobite.tramp.utils.lazyMock
 import pl.mobite.tramp.utils.lazyPowerMock
 
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(TimeTable::class)
-class GetTimeTableProcessorTest: KoinTest {
+class GetTimeTableProcessorTest {
 
     private val timeTableRepositoryMock: TimeTableRepository by lazyMock()
     private val localTimeTableMock: TimeTable by lazyPowerMock()
     private val remoteTimeTableMock: TimeTable by lazyPowerMock()
+
+    @Rule
+    private val koinTestRule = KoinTestRule(module {
+        factory(override = true) { timeTableRepositoryMock }
+        single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
+    })
 
     @Test
     fun testGetTimeTableLocalEmptyRemoteSuccess() {
@@ -203,10 +209,6 @@ class GetTimeTableProcessorTest: KoinTest {
     }
 
     private fun test(actions: List<GetTimeTableAction>, expectedResults: List<GetTimeTableResult>) {
-        loadKoinModules(listOf(module {
-            factory(override = true) { timeTableRepositoryMock }
-            single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
-        }))
         val processor = TimeTableActionProcessor()
         val testObserver = TestObserver<TimeTableResult>()
 
@@ -220,7 +222,6 @@ class GetTimeTableProcessorTest: KoinTest {
 
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-
     }
 
     companion object {

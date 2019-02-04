@@ -3,6 +3,7 @@ package pl.mobite.tramp.ui.components.tramline
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.dsl.module.module
@@ -20,6 +21,7 @@ import pl.mobite.tramp.ui.components.tramline.mvi.TramLineActionProcessor
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult.GetTramLineResult
 import pl.mobite.tramp.utils.ImmediateSchedulerProvider
+import pl.mobite.tramp.utils.KoinTestRule
 import pl.mobite.tramp.utils.lazyMock
 import pl.mobite.tramp.utils.lazyPowerMock
 
@@ -33,6 +35,13 @@ class GetTramLineProcessorTest {
     private val localTramLineMock: TramLine by lazyPowerMock()
     private val remoteTramLineMock: TramLine by lazyPowerMock()
     private val tramLineDescMock: TramLineDesc by lazyPowerMock()
+
+    @Rule
+    private val koinTestRule = KoinTestRule(module {
+        factory(override = true) { timeTableRepositoryMock }
+        factory(override = true) { tramLineRepositoryMock }
+        single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
+    })
 
     @Test
     fun testGetTramLineLocalEmptyRemoteSuccess() {

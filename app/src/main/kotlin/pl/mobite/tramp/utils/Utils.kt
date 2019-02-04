@@ -7,7 +7,6 @@ import android.graphics.Canvas
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.core.content.res.ResourcesCompat
-import pl.mobite.tramp.TrampApp
 import pl.mobite.tramp.data.repositories.models.TimeEntry
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,18 +18,18 @@ fun isOreoOrHigher() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
 fun isMarshmallowOrHigher() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
-fun getBitmap(drawableRes: Int): Bitmap? {
-    ResourcesCompat.getDrawable(TrampApp.instance.resources, drawableRes, null)?.let { drawable ->
+fun getBitmap(context: Context, drawableRes: Int): Bitmap? {
+    return ResourcesCompat.getDrawable(context.resources, drawableRes, null)?.let { drawable ->
         val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas()
         canvas.setBitmap(bitmap)
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         drawable.draw(canvas)
-        return bitmap
+        bitmap
     }
 }
 
-fun dpToPx(dp: Int) = dp * TrampApp.instance.resources.displayMetrics.density
+fun dpToPx(context: Context, dp: Int) = dp * context.resources.displayMetrics.density
 
 @SuppressLint("SimpleDateFormat")
 fun getCurrentTime(): TimeEntry {
@@ -40,7 +39,7 @@ fun getCurrentTime(): TimeEntry {
     return TimeEntry(hour, minute)
 }
 
-fun hasNetwork(): Boolean {
-    val cm = TrampApp.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+fun hasNetwork(context: Context): Boolean {
+    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return cm.activeNetworkInfo?.isConnected ?: false
 }

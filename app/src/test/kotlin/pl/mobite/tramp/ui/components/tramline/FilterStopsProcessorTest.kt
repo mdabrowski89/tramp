@@ -3,10 +3,12 @@ package pl.mobite.tramp.ui.components.tramline
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.koin.dsl.module.module
-import org.koin.standalone.StandAloneContext
 import org.mockito.Mockito
+import org.powermock.modules.junit4.PowerMockRunner
 import pl.mobite.tramp.data.repositories.TimeTableRepository
 import pl.mobite.tramp.data.repositories.TramLineRepository
 import pl.mobite.tramp.data.repositories.models.FilterStopsQuery
@@ -19,13 +21,21 @@ import pl.mobite.tramp.ui.components.tramline.mvi.TramLineActionProcessor
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult.FilterStopsResult
 import pl.mobite.tramp.utils.ImmediateSchedulerProvider
+import pl.mobite.tramp.utils.KoinTestRule
 import pl.mobite.tramp.utils.lazyMock
 
-
+@RunWith(PowerMockRunner::class)
 class FilterStopsProcessorTest {
 
     private val tramLineRepositoryMock: TramLineRepository by lazyMock()
     private val timeTableRepositoryMock: TimeTableRepository by lazyMock()
+
+    @Rule
+    private val koinTestRule = KoinTestRule(module {
+        factory(override = true) { timeTableRepositoryMock }
+        factory(override = true) { tramLineRepositoryMock }
+        single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
+    })
 
     @Test
     fun testFilterStopsLocalEmptyRemoteSuccess() {
@@ -177,11 +187,6 @@ class FilterStopsProcessorTest {
 
 
     private fun test(actions: List<FilterStopsAction>, expectedResults: List<FilterStopsResult>) {
-        StandAloneContext.loadKoinModules(listOf(module {
-            factory(override = true) { timeTableRepositoryMock }
-            factory(override = true) { tramLineRepositoryMock }
-            single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
-        }))
         val processor = TramLineActionProcessor()
         val testObserver = TestObserver<TramLineResult>()
 

@@ -64,7 +64,7 @@ class TramLineFragment: MviBaseFragment<TramLineAction, TramLineResult, TramLine
 
         if (googleMap == null) {
             (childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment).getMapAsync(this)
-            if (!hasNetwork()) {
+            if (!hasNetwork(requireContext())) {
                 AlertDialog.Builder(requireContext())
                     .setTitle(R.string.no_network_title)
                     .setMessage(R.string.no_network_msg)
@@ -174,8 +174,8 @@ class TramLineFragment: MviBaseFragment<TramLineAction, TramLineResult, TramLine
         tramLineStops: List<TramStopDetails>,
         markedTramStopIds: List<String>
     ) {
-        val blueDotBitmap = getBitmap(R.drawable.ic_blue_dot)
-        val redDotBitmap = getBitmap(R.drawable.ic_red_dot)
+        val blueDotBitmap = getBitmap(requireContext(), R.drawable.ic_blue_dot)
+        val redDotBitmap = getBitmap(requireContext(), R.drawable.ic_red_dot)
         val boundsBuilder by lazy { LatLngBounds.builder() }
         // update camera if stops are loaded for the first time
         val updateCamera = mviController.viewState?.tramLineStops.isNullOrEmpty()
@@ -197,7 +197,7 @@ class TramLineFragment: MviBaseFragment<TramLineAction, TramLineResult, TramLine
             marker.tag = TimeTableDetails(tramLine.name, tramLine.direction, tramStop.name, tramStop.id)
         }
         if (updateCamera) {
-            map.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(36).toInt()))
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), dpToPx(requireContext(), 36).toInt()))
         }
     }
 

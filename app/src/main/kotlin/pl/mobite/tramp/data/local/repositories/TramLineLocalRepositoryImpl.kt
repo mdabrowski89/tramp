@@ -1,6 +1,6 @@
 package pl.mobite.tramp.data.local.repositories
 
-import pl.mobite.tramp.data.local.db.TrampAppDatabase
+import pl.mobite.tramp.data.local.db.dao.TramDao
 import pl.mobite.tramp.data.local.db.entities.toTramLineEntity
 import pl.mobite.tramp.data.local.db.entities.toTramStop
 import pl.mobite.tramp.data.local.db.entities.toTramStopEntity
@@ -12,11 +12,10 @@ import pl.mobite.tramp.data.repositories.models.TramStop
 
 class TramLineLocalRepositoryImpl(
     private val jsonDataProvider: JsonDataProvider,
-    private val database: TrampAppDatabase
+    private val tramDao: TramDao
 ): TramLineLocalRepository {
 
     override fun getTramLineFromDb(tramLineDesc: TramLineDesc): TramLine? {
-        val tramDao = database.tramDao()
         val tramLineEntity = tramDao.getTramLine(tramLineDesc.name, tramLineDesc.direction).firstOrNull()
 
         return if (tramLineEntity != null) {
@@ -45,7 +44,6 @@ class TramLineLocalRepositoryImpl(
     }
 
     override fun storeTramLineInDb(tramLineDesc: TramLineDesc, tramLine: TramLine) {
-        val tramDao = database.tramDao()
         val tramLineId = tramDao.insert(tramLineDesc.toTramLineEntity())
         val tramStopEntities = tramLine.stops.map { it.toTramStopEntity(tramLineId) }
         tramDao.insert(tramStopEntities)

@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_time_table_row.view.*
 import pl.mobite.tramp.R
-import pl.mobite.tramp.TrampApp
 import pl.mobite.tramp.ui.models.TimeTableRow
 
 
@@ -39,6 +38,11 @@ class TimeTableAdapter: RecyclerView.Adapter<TimeTableViewHolder>() {
 
 class TimeTableViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
+    private val colorDarkViolet2 by lazy { ContextCompat.getColor(itemView.context, R.color.darkViolet2) }
+    private val colorDarkViolet3 by lazy { ContextCompat.getColor(itemView.context, R.color.darkViolet3) }
+    private val colorLightViolet2 by lazy { ContextCompat.getColor(itemView.context, R.color.lightViolet2) }
+    private val colorLightViolet3 by lazy { ContextCompat.getColor(itemView.context, R.color.lightViolet3) }
+
     fun bind(timeTableRow: TimeTableRow, isOdd: Boolean) {
         with(itemView) {
             if (isOdd) {
@@ -60,13 +64,5 @@ class TimeTableViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 rowMinutesLayout.addView(minuteTextView)
             }
         }
-    }
-
-    companion object {
-
-        val colorDarkViolet2 by lazy { ContextCompat.getColor(TrampApp.instance, R.color.darkViolet2) }
-        val colorDarkViolet3 by lazy { ContextCompat.getColor(TrampApp.instance, R.color.darkViolet3) }
-        val colorLightViolet2 by lazy { ContextCompat.getColor(TrampApp.instance, R.color.lightViolet2) }
-        val colorLightViolet3 by lazy { ContextCompat.getColor(TrampApp.instance, R.color.lightViolet3) }
     }
 }

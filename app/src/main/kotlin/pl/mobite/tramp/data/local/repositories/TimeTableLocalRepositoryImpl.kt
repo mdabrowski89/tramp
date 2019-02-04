@@ -1,6 +1,8 @@
 package pl.mobite.tramp.data.local.repositories
 
-import pl.mobite.tramp.data.local.db.TrampAppDatabase
+import pl.mobite.tramp.data.local.db.dao.TimeEntryDao
+import pl.mobite.tramp.data.local.db.dao.TimeTableStatusDao
+import pl.mobite.tramp.data.local.db.dao.TramDao
 import pl.mobite.tramp.data.local.db.entities.TimeTableStatusEntity
 import pl.mobite.tramp.data.local.db.entities.toTimeEntry
 import pl.mobite.tramp.data.local.db.entities.toTimeEntryEntity
@@ -8,14 +10,16 @@ import pl.mobite.tramp.data.repositories.models.TimeTable
 
 
 class TimeTableLocalRepositoryImpl(
-    private val database: TrampAppDatabase
+    private val tramDao: TramDao,
+    private val timeTableStatusDao: TimeTableStatusDao,
+    private val timeEntryDao: TimeEntryDao
 ): TimeTableLocalRepository {
 
     override fun getTimeTable(tramStopId: String): TimeTable? {
-        val tramStop = database.tramDao().getTramStop(tramStopId).firstOrNull()
+        val tramStop = tramDao.getTramStop(tramStopId).firstOrNull()
         if (tramStop != null) {
-            val updateTimestamp = database.timeTableStatusDao().getTimeTableStatus(tramStopId).firstOrNull()?.updateTimestamp
-            val timeEntries = database.timeEntryDao().getTimeEntries(tramStopId).map { it.toTimeEntry() }
+            val updateTimestamp = timeTableStatusDao.getTimeTableStatus(tramStopId).firstOrNull()?.updateTimestamp
+            val timeEntries = timeEntryDao.getTimeEntries(tramStopId).map { it.toTimeEntry() }
             if (timeEntries.isEmpty()) {
                 return null
             }
@@ -30,14 +34,12 @@ class TimeTableLocalRepositoryImpl(
     }
 
     override fun storeTimeTable(tramStopId: String, timeTable: TimeTable): TimeTable {
-        val tramStop = database.tramDao().getTramStop(tramStopId).firstOrNull()
+        val tramStop = tramDao.getTramStop(tramStopId).firstOrNull()
         if (tramStop != null) {
-            val timeEntryDao = database.timeEntryDao()
-
             timeEntryDao.delete(tramStopId)
             timeEntryDao.insert(timeTable.times.map { it.toTimeEntryEntity(tramStopId) })
 
-            database.timeTableStatusDao().insert(TimeTableStatusEntity(tramStopId, System.currentTimeMillis()))
+            timeTableStatusDao.insert(TimeTableStatusEntity(tramStopId, System.currentTimeMillis()))
         }
         return timeTable
     }
