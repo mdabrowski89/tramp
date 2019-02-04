@@ -97,6 +97,8 @@ dependencies {
     testImplementation Dependencies.powerMockMockitoLib
     testImplementation Dependencies.powerMockJunitLib
 
+    testImplementation Dependencies.koinTestLib
+
     // UI tests
     androidTestImplementation Dependencies.testRunnerLib
     androidTestImplementation Dependencies.espressoLib

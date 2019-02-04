@@ -15,6 +15,7 @@ object Versions {
     const val androidxLegacySupport = "1.0.0"
     const val androidxRoom = "2.1.0-alpha03"
     const val androidxLifecycle = "2.0.0"
+    const val androidxMaterial = "1.0.0-rc01"
 
     const val playServiceMaps = "15.0.1"
     const val playServices = "16.0.0"
@@ -57,11 +58,8 @@ object Versions {
     const val junit = "4.12"
     const val test = "1.1.0"
     const val espresso = "3.1.0"
-
-    // not used
-    const val androidxMaterial = "1.0.0-rc01"
     const val mockito = "2.8.9"
-    const val powerMock = "1.7.0"
+    const val powerMock = "2.0.0"
     const val supportTest = "1.0.2"
 }
 
@@ -100,6 +98,7 @@ object Dependencies {
     const val koinLib = "org.koin:koin-android:${Versions.koin}"
     const val koinScopeLib = "org.koin:koin-androidx-scope:${Versions.koin}"
     const val koinViewModelLib = "org.koin:koin-androidx-viewmodel:${Versions.koin}"
+    const val koinTestLib = "org.koin:koin-test:${Versions.koin}"
 
     const val rxAndroidLib = "io.reactivex.rxjava2:rxandroid:${Versions.rxAndroid}"
     const val rxKotlinLib = "io.reactivex.rxjava2:rxkotlin:${Versions.rxKotlin}"

@@ -3,7 +3,9 @@ package pl.mobite.tramp
 import android.app.Application
 import androidx.room.Room
 import io.reactivex.plugins.RxJavaPlugins
+import org.koin.android.ext.android.startKoin
 import pl.mobite.tramp.data.local.db.TrampAppDatabase
+import pl.mobite.tramp.di.appModule
 
 
 class TrampApp: Application() {
@@ -14,8 +16,13 @@ class TrampApp: Application() {
         super.onCreate()
         instance = this
 
+        initKoin()
         initDatabase()
         initRxJavaErrorHandler()
+    }
+
+    private fun initKoin() {
+        startKoin(this, listOf(appModule))
     }
 
     private fun initDatabase() {

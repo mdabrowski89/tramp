@@ -4,6 +4,8 @@ import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import org.junit.Assert
 import org.junit.Test
+import org.koin.dsl.module.module
+import org.koin.standalone.StandAloneContext
 import org.mockito.Mockito
 import pl.mobite.tramp.data.repositories.TimeTableRepository
 import pl.mobite.tramp.data.repositories.TramLineRepository
@@ -11,6 +13,7 @@ import pl.mobite.tramp.data.repositories.models.FilterStopsQuery
 import pl.mobite.tramp.data.repositories.models.TimeEntry
 import pl.mobite.tramp.data.repositories.models.TimeTable
 import pl.mobite.tramp.data.repositories.models.TramStop
+import pl.mobite.tramp.ui.base.mvi.SchedulerProvider
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineAction.FilterStopsAction
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineActionProcessor
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult
@@ -174,7 +177,12 @@ class FilterStopsProcessorTest {
 
 
     private fun test(actions: List<FilterStopsAction>, expectedResults: List<FilterStopsResult>) {
-        val processor = TramLineActionProcessor(ImmediateSchedulerProvider.instance, tramLineRepositoryMock, timeTableRepositoryMock)
+        StandAloneContext.loadKoinModules(listOf(module {
+            factory(override = true) { timeTableRepositoryMock }
+            factory(override = true) { tramLineRepositoryMock }
+            single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
+        }))
+        val processor = TramLineActionProcessor()
         val testObserver = TestObserver<TramLineResult>()
 
         processor.apply(Observable.fromIterable(actions)).subscribe(testObserver)

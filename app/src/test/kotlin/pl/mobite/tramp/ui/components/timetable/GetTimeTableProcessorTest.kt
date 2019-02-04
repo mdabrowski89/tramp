@@ -5,12 +5,16 @@ import io.reactivex.observers.TestObserver
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.dsl.module.module
+import org.koin.standalone.StandAloneContext.loadKoinModules
+import org.koin.test.KoinTest
 import org.mockito.Mockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 import pl.mobite.tramp.data.repositories.TimeTableRepository
 import pl.mobite.tramp.data.repositories.models.TimeTable
 import pl.mobite.tramp.data.repositories.models.TimeTableDesc
+import pl.mobite.tramp.ui.base.mvi.SchedulerProvider
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableAction.GetTimeTableAction
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableActionProcessor
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableResult
@@ -22,7 +26,7 @@ import pl.mobite.tramp.utils.lazyPowerMock
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(TimeTable::class)
-class GetTimeTableProcessorTest {
+class GetTimeTableProcessorTest: KoinTest {
 
     private val timeTableRepositoryMock: TimeTableRepository by lazyMock()
     private val localTimeTableMock: TimeTable by lazyPowerMock()
@@ -199,7 +203,11 @@ class GetTimeTableProcessorTest {
     }
 
     private fun test(actions: List<GetTimeTableAction>, expectedResults: List<GetTimeTableResult>) {
-        val processor = TimeTableActionProcessor(ImmediateSchedulerProvider.instance, timeTableRepositoryMock)
+        loadKoinModules(listOf(module {
+            factory(override = true) { timeTableRepositoryMock }
+            single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
+        }))
+        val processor = TimeTableActionProcessor()
         val testObserver = TestObserver<TimeTableResult>()
 
         processor.apply(Observable.fromIterable(actions)).subscribe(testObserver)
@@ -212,6 +220,7 @@ class GetTimeTableProcessorTest {
 
         testObserver.assertComplete()
         testObserver.assertNoErrors()
+
     }
 
     companion object {

@@ -1,17 +1,18 @@
 package pl.mobite.tramp.ui.components.timetable.mvi
 
 import io.reactivex.Observable
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 import pl.mobite.tramp.data.repositories.TimeTableRepository
 import pl.mobite.tramp.ui.base.mvi.*
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableAction.GetTimeTableAction
 import pl.mobite.tramp.ui.components.timetable.mvi.TimeTableResult.GetTimeTableResult.*
 
 
-class TimeTableActionProcessor(
-    schedulerProvider: SchedulerProvider,
-    timeTableRepository: TimeTableRepository
-): MviActionsProcessor<TimeTableAction, TimeTableResult>() {
+class TimeTableActionProcessor: MviActionsProcessor<TimeTableAction, TimeTableResult>(), KoinComponent {
 
+    private val schedulerProvider: SchedulerProvider by inject()
+    private val timeTableRepository: TimeTableRepository by inject()
 
     override fun getActionProcessors(shared: Observable<TimeTableAction>) = listOf(
         shared.connect(getTimeTableProcessor)

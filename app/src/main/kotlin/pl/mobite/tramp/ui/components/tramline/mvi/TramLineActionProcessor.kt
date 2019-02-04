@@ -1,6 +1,8 @@
 package pl.mobite.tramp.ui.components.tramline.mvi
 
 import io.reactivex.Observable
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 import pl.mobite.tramp.data.repositories.TimeTableRepository
 import pl.mobite.tramp.data.repositories.TramLineRepository
 import pl.mobite.tramp.data.repositories.models.*
@@ -12,11 +14,11 @@ import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult.GetTramLineResu
 import kotlin.math.absoluteValue
 
 
-class TramLineActionProcessor(
-    schedulerProvider: SchedulerProvider,
-    tramLineRepository: TramLineRepository,
-    timeTableRepository: TimeTableRepository
-): MviActionsProcessor<TramLineAction, TramLineResult>() {
+class TramLineActionProcessor: MviActionsProcessor<TramLineAction, TramLineResult>(), KoinComponent {
+
+    private val schedulerProvider: SchedulerProvider by inject()
+    private val tramLineRepository: TramLineRepository by inject()
+    private val timeTableRepository: TimeTableRepository by inject()
 
     override fun getActionProcessors(shared: Observable<TramLineAction>) = listOf(
         shared.connect(getTramLineActionProcessor),

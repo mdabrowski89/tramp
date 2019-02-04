@@ -5,17 +5,20 @@ import io.reactivex.observers.TestObserver
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.dsl.module.module
+import org.koin.standalone.StandAloneContext
 import org.mockito.Mockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
-import pl.mobite.tramp.data.repositories.TramLineRepository
 import pl.mobite.tramp.data.repositories.TimeTableRepository
+import pl.mobite.tramp.data.repositories.TramLineRepository
 import pl.mobite.tramp.data.repositories.models.TramLine
 import pl.mobite.tramp.data.repositories.models.TramLineDesc
-import pl.mobite.tramp.ui.components.tramline.mvi.TramLineAction.*
+import pl.mobite.tramp.ui.base.mvi.SchedulerProvider
+import pl.mobite.tramp.ui.components.tramline.mvi.TramLineAction.GetTramLineAction
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineActionProcessor
 import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult
-import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult.*
+import pl.mobite.tramp.ui.components.tramline.mvi.TramLineResult.GetTramLineResult
 import pl.mobite.tramp.utils.ImmediateSchedulerProvider
 import pl.mobite.tramp.utils.lazyMock
 import pl.mobite.tramp.utils.lazyPowerMock
@@ -194,7 +197,12 @@ class GetTramLineProcessorTest {
     }
 
     private fun test(actions: List<GetTramLineAction>, expectedResults: List<GetTramLineResult>) {
-        val processor = TramLineActionProcessor(ImmediateSchedulerProvider.instance, tramLineRepositoryMock, timeTableRepositoryMock)
+        StandAloneContext.loadKoinModules(listOf(module {
+            factory(override = true) { timeTableRepositoryMock }
+            factory(override = true) { tramLineRepositoryMock }
+            single<SchedulerProvider>(override = true) { ImmediateSchedulerProvider.instance }
+        }))
+        val processor = TramLineActionProcessor()
         val testObserver = TestObserver<TramLineResult>()
 
         processor.apply(Observable.fromIterable(actions)).subscribe(testObserver)
